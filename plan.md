@@ -1,507 +1,220 @@
-# ChessZug
+# ChessZug — ZugZug your chess games
 
-# 0. System Architecture (read first)
+## 0. What you are actually building
 
-You are building three layers:
+A **local chess training app**:
 
-```
-UI (React Native)
-    ↓
-Game Logic (TypeScript)
-    ↓
-Engine Layer (Kotlin + Stockfish)
-```
-
-### Responsibilities
-
-| Layer  | Responsibility                  |
-| ------ | ------------------------------- |
-| UI     | Rendering, user input           |
-| Logic  | Rules, validation, flow control |
-| Engine | Move calculation and evaluation |
-
-Key rule:
-
-- **Only the logic layer knows about the game**
-- UI and engine are both “clients” of the logic layer
+- Play chess (legal moves only)
+- Play vs Stockfish (local)
+- Get evaluation feedback
+- Save games
+- Practice positions (puzzles later)
+- Multiplayer later (separate system entirely)
 
 ---
 
-# Phase 1 — Foundation (UI + Rules)
+# 1. System reality (do not overthink)
 
-## Goal
+You only have 3 real systems:
 
-Playable chess without AI
+```
+1. UI (React Native)
+2. Chess State (JS)
+3. Stockfish process (native)
+```
 
-## What to build
-
-- Board UI
-- Drag/drop or tap moves
-- Integrate `chess.js`
-
-## Requirements
-
-- Legal move validation
-- Turn handling
-- Reset / undo
+Everything else is just organization.
 
 ---
 
-## Data model (critical)
+# 2. Core architecture (minimal correct version)
 
-Always store:
+```
+UI
+ ↓
+Game State (single source of truth)
+ ↓
+Engine Bridge (Stockfish only)
+```
 
-```ts
-{
-  fen: string,
-  moves: string[]
+That’s it.
+
+No extra layers needed.
+
+---
+
+# 3. Responsibilities (strict and simple)
+
+## UI (React Native)
+
+- Render board
+- Send user moves
+- Show engine move + evaluation
+- Show game state
+
+NO rules logic
+
+---
+
+## Game State (TypeScript)
+
+This is your “brain”.
+
+Responsible for:
+
+- legal move validation
+- FEN tracking
+- move history
+- game over detection
+
+Use:
+
+- `chess.js`
+
+So your “state layer” is basically a wrapper around it.
+
+---
+
+## Engine Bridge (Stockfish adapter)
+
+Only does:
+
+- send FEN
+- request move
+- return best move
+- return evaluation (optional later)
+
+Nothing else.
+
+---
+
+# 4. Data model (this is your real foundation)
+
+```ts id="c1"
+type Game = {
+  fen: string;
+  moves: string[];
+};
+```
+
+That is your entire app state.
+
+Everything derives from this.
+
+---
+
+# 5. Game flow (this is the whole app)
+
+## User move
+
+```
+UI → validate move → update FEN → update UI
+```
+
+## Engine move
+
+```
+UI → Game State → Engine → move → apply → UI update
+```
+
+No controllers, no orchestration classes needed.
+
+---
+
+# 6. Stockfish integration (simple version)
+
+Do NOT over-engineer engine lifecycle.
+
+You only need:
+
+## Engine API
+
+```ts id="c2"
+interface Engine {
+  setPosition(fen: string): void;
+  go(movetime: number): Promise<string>;
+  stop(): void;
 }
 ```
 
-Why:
-
-- FEN = current state
-- Moves = history
-
-This enables:
-
-- Save/load
-- Replay
-- Future multiplayer sync
-
 ---
-
-## Output
-
-- Fully playable offline chess
-- Game can be saved and resumed
-
----
-
-# Phase 2 — Architecture Layer
-
-## Goal
-
-Decouple game from opponent
-
-## Core interface
-
-```ts
-interface Opponent {
-  getMove(fen: string): Promise<string>;
-}
-```
-
----
-
-## GameController
-
-Central coordinator:
-
-Responsibilities:
-
-- Apply user moves
-- Request opponent move
-- Update state
-- Emit events to UI
-
----
-
-## Important rule
-
-Do NOT call engine directly from UI.
-
-Correct flow:
-
-```
-UI → GameController → Opponent → Engine
-```
-
----
-
-## Output
-
-- Clean separation
-- Future multiplayer ready
-
----
-
-# Phase 3 — Engine Integration (Native Layer)
-
-## Goal
-
-Run Stockfish locally
-
----
-
-## Step 1 — Bundle binary
-
-Place in:
-
-```
-android/app/src/main/assets/stockfish
-```
-
-At runtime:
-
-- Copy to internal storage
-- Set executable permissions
-
----
-
-## Step 2 — EngineManager (critical component)
-
-This manages the engine lifecycle.
-
-### Responsibilities
-
-1. Persistent process
-   - Start once
-   - Reuse for all moves
-
-2. Communication
-   - Send UCI commands
-   - Parse output
-
-3. Stability
-   - Handle crashes
-   - Restart if needed
-
-4. Threading
-   - Run off UI thread
-
----
-
-## Step 3 — Engine initialization
-
-On startup:
-
-```
-uci
-isready
-ucinewgame
-go depth 1   (warm-up)
-```
-
-Why:
-
-- Reduces first-move latency
-
----
-
-## Step 4 — UCI communication
-
-Send:
-
-```
-position fen <FEN>
-go movetime 500
-```
-
-Receive:
-
-```
-bestmove e2e4
-```
-
----
-
-## Step 5 — Move parsing
-
-You must handle:
-
-- Promotions: `e7e8q`
-- Castling: `e1g1`
-- En passant
-
-Convert to `chess.js` format before applying.
-
----
-
-## Output
-
-- Engine returns valid moves reliably
-
----
-
-# Phase 4 — Engine Control & Safety
-
-## Goal
-
-Make engine interaction stable
-
----
-
-## 1. Search control
-
-Before any new request:
-
-```
-stop
-```
-
-Why:
-
-- Prevent outdated results corrupting state
-
----
-
-## 2. Queue system
-
-- Only one active search
-- Ignore late responses
-
----
-
-## 3. Timeout handling
-
-If no response in ~3 seconds:
-
-- Kill process
-- Restart engine
-
----
-
-## 4. Error recovery
-
-- Detect crash
-- Reinitialize automatically
-
----
-
-## Output
-
-- Stable engine behavior under all conditions
-
----
-
-# Phase 5 — AI Gameplay
-
-## Goal
-
-Play vs AI
 
 ## Flow
 
 ```
-User move
-→ validate (chess.js)
-→ update FEN
-→ request engine move
-→ apply result
+setPosition(fen)
+go(500ms)
+→ "bestmove e2e4"
 ```
+
+Done.
 
 ---
 
-## Difficulty system
+# 7. Difficulty system (simple, correct)
 
-Use time-based search:
+Do NOT build AI frameworks.
 
-| Level  | movetime |
+Just:
+
+| Mode   | movetime |
 | ------ | -------- |
-| Easy   | 200 ms   |
-| Medium | 500 ms   |
-| Hard   | 1000 ms  |
+| Easy   | 200ms    |
+| Medium | 500ms    |
+| Hard   | 1000ms   |
 
-Why:
-
-- Consistent across devices
+That’s it.
 
 ---
 
-## Output
+# 8. Features roadmap (corrected order)
 
-- Responsive AI opponent
+## Phase 1 — Core App (MVP)
 
----
-
-# Phase 6 — Practice Features
-
-## 1. Puzzle mode
-
-- Load FEN
-- Compare user move vs engine best move
+- Chess board UI
+- legal moves (chess.js)
+- move history
+- reset game
 
 ---
 
-## 2. Zug mode (core feature)
+## Phase 2 — Stockfish
 
-Logic:
-
-- Get top 2 engine moves
-- Compare evaluation
-
-If large gap:
-
-- Only one correct move
+- local engine integration
+- play vs AI
+- move timing system
 
 ---
 
-## Output
+## Phase 3 — Feedback system
 
-- Training-focused gameplay
-
----
-
-# Phase 7 — Evaluation System
-
-## Parse engine output
-
-Example:
-
-```
-score cp 34
-```
+- evaluation bar
+- blunder detection (simple eval diff)
 
 ---
 
-## Features
+## Phase 4 — Storage
 
-1. Evaluation bar
-2. Blunder detection:
-   - Large eval drop
-
-3. Best move hint
+- save/load games (FEN + moves)
 
 ---
 
-## Smoothing (important)
+## Phase 5 — Training tools
 
-- Animate eval changes
-- Clamp extreme values
-
----
-
-## Output
-
-- Clear, usable feedback
+- puzzles (fixed positions)
+- best move hints
 
 ---
 
-# Phase 8 — Persistence & Replay
+## Phase 6 — UX polish
 
-## Store
-
-- FEN
-- Move list (PGN-compatible)
-
----
-
-## Features
-
-- Save game
-- Load game
-- Replay moves
+- animations
+- highlights
+- smooth transitions
 
 ---
 
-## Output
+## Phase 7 — Multiplayer (completely separate system)
 
-- State durability
-
----
-
-# Phase 9 — UX & Performance
-
-## UI improvements
-
-- Move animations
-- Highlight legal moves
-- Highlight last move
-- Loading indicator during engine thinking
-
----
-
-## Battery control
-
-- Limit movetime
-- Pause engine when app backgrounded
-
----
-
-## Output
-
-- Smooth experience
-
----
-
-# Phase 10 — Settings System
-
-## Add configurable options
-
-- Difficulty
-- Engine strength
-- Sound toggle
-
----
-
-## Output
-
-- User control
-
----
-
-# Phase 11 — Analytics (local)
-
-## Track
-
-- Blunders
-- Accuracy percentage
-
-Store locally.
-
----
-
-## Output
-
-- Progress tracking foundation
-
----
-
-# Phase 12 — GPL Compliance
-
-Because you bundle Stockfish:
-
-## You must include:
-
-- GPLv3 license text
-- Stockfish attribution
-- Link to Stockfish source
-- Access to your app’s source code
-
----
-
-## Add in-app screen:
-
-- “Open Source Licenses”
-
----
-
-# Phase 13 — Testing
-
-## Required tests
-
-- Move parsing (especially promotions)
-- Engine response parsing
-- FEN correctness
-- Endgame cases:
-  - Checkmate
-  - Stalemate
-
----
-
-## Output
-
-- Reliability
-
----
-
-# Final MVP Criteria
-
-You are done when:
-
-- AI works offline reliably
-- Engine never blocks UI
-- Puzzle + Zug mode work
-- Games can be saved/loaded
-- GPL compliance is implemented
+- do NOT mix with engine logic
+- treat as different product layer
