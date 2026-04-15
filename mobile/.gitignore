@@ -1,0 +1,67 @@
+# OS
+.DS_Store
+
+# IDE / Editors
+.idea
+*.iml
+*.hprof
+
+# Xcode / iOS (if present)
+build/
+DerivedData/
+*.pbxuser
+!default.pbxuser
+*.mode1v3
+!default.mode1v3
+*.mode2v3
+!default.mode2v3
+*.perspectivev3
+!default.perspectivev3
+xcuserdata
+*.xccheckout
+*.moved-aside
+*.xcuserstate
+**/.xcode.env.local
+
+# Android
+android/.gradle/
+android/app/build/
+android/build/
+android/local.properties
+android/.cxx/
+*.keystore
+!debug.keystore
+
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-error.log*
+
+# React Native / Metro
+*.jsbundle
+.metro-health-check*
+
+# Build output
+dist/
+
+# Tests / coverage
+coverage/
+
+# Yarn (Berry)
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
+
+# Fastlane (CI / screenshots / release tooling)
+**/fastlane/report.xml
+**/fastlane/Preview.html
+**/fastlane/screenshots
+**/fastlane/test_output
+
+# Backend / misc compiled artifacts
+**/*.exe
+**/*.out
+**/*.log

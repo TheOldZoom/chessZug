@@ -1,0 +1,1 @@
+/home/zoom/projects/chessZug/mobile/android/app/build/intermediates/cxx/Debug/5z543u3v/obj/x86

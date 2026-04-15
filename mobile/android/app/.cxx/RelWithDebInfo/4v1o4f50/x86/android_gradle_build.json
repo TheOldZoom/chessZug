@@ -1,0 +1,55 @@
+{
+  "buildFiles": [
+    "/home/zoom/projects/chessZug/mobile/node_modules/react-native-safe-area-context/android/src/main/jni/CMakeLists.txt",
+    "/home/zoom/projects/chessZug/mobile/node_modules/react-native/ReactAndroid/cmake-utils/default-app-setup/CMakeLists.txt"
+  ],
+  "cleanCommandsComponents": [
+    [
+      "/home/zoom/Android/Sdk/cmake/3.22.1/bin/ninja",
+      "-C",
+      "/home/zoom/projects/chessZug/mobile/android/app/.cxx/RelWithDebInfo/4v1o4f50/x86",
+      "clean"
+    ]
+  ],
+  "buildTargetsCommandComponents": [
+    "/home/zoom/Android/Sdk/cmake/3.22.1/bin/ninja",
+    "-C",
+    "/home/zoom/projects/chessZug/mobile/android/app/.cxx/RelWithDebInfo/4v1o4f50/x86",
+    "{LIST_OF_TARGETS_TO_BUILD}"
+  ],
+  "libraries": {
+    "appmodules::@6890427a1f51a3e7e1df": {
+      "toolchain": "toolchain",
+      "abi": "x86",
+      "artifactName": "appmodules",
+      "output": "/home/zoom/projects/chessZug/mobile/android/app/build/intermediates/cxx/RelWithDebInfo/4v1o4f50/obj/x86/libappmodules.so",
+      "runtimeFiles": [
+        "/home/zoom/projects/chessZug/mobile/android/app/build/intermediates/cxx/RelWithDebInfo/4v1o4f50/obj/x86/libreact_codegen_safeareacontext.so",
+        "/home/zoom/.gradle/caches/9.3.1/transforms/3c01aea05d2737e987399f1309ae090e/transformed/fbjni-0.7.0/prefab/modules/fbjni/libs/android.x86/libfbjni.so",
+        "/home/zoom/.gradle/caches/9.3.1/transforms/52da343cc1ea1a7779b02ec83d496433/transformed/react-android-0.85.1-release/prefab/modules/jsi/libs/android.x86/libjsi.so",
+        "/home/zoom/.gradle/caches/9.3.1/transforms/52da343cc1ea1a7779b02ec83d496433/transformed/react-android-0.85.1-release/prefab/modules/reactnative/libs/android.x86/libreactnative.so"
+      ]
+    },
+    "react_codegen_safeareacontext::@7984cd80db47aa7b952a": {
+      "toolchain": "toolchain",
+      "abi": "x86",
+      "artifactName": "react_codegen_safeareacontext",
+      "output": "/home/zoom/projects/chessZug/mobile/android/app/build/intermediates/cxx/RelWithDebInfo/4v1o4f50/obj/x86/libreact_codegen_safeareacontext.so",
+      "runtimeFiles": [
+        "/home/zoom/.gradle/caches/9.3.1/transforms/3c01aea05d2737e987399f1309ae090e/transformed/fbjni-0.7.0/prefab/modules/fbjni/libs/android.x86/libfbjni.so",
+        "/home/zoom/.gradle/caches/9.3.1/transforms/52da343cc1ea1a7779b02ec83d496433/transformed/react-android-0.85.1-release/prefab/modules/jsi/libs/android.x86/libjsi.so",
+        "/home/zoom/.gradle/caches/9.3.1/transforms/52da343cc1ea1a7779b02ec83d496433/transformed/react-android-0.85.1-release/prefab/modules/reactnative/libs/android.x86/libreactnative.so"
+      ]
+    }
+  },
+  "toolchains": {
+    "toolchain": {
+      "cCompilerExecutable": "/home/zoom/Android/Sdk/ndk/27.1.12297006/toolchains/llvm/prebuilt/linux-x86_64/bin/clang.lld",
+      "cppCompilerExecutable": "/home/zoom/Android/Sdk/ndk/27.1.12297006/toolchains/llvm/prebuilt/linux-x86_64/bin/clang++.lld"
+    }
+  },
+  "cFileExtensions": [],
+  "cppFileExtensions": [
+    "cpp"
+  ]
+}
