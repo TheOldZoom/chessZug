@@ -1,16 +1,13 @@
 import { useMemo, useState } from 'react';
-import { Chess, Square } from 'chess.js';
+import { Square } from 'chess.js';
 import { useWindowDimensions, View } from 'react-native';
-import {
-  useSafeAreaFrame,
-  useSafeAreaInsets,
-} from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Chessboard } from '../components/Chessboard';
+import { GameController } from '../game/GameController';
 
 export function GameScreen() {
-  const game = useMemo(() => new Chess(), []);
-
-  const [fen, setFen] = useState(game.fen());
+  const controller = useMemo(() => new GameController(), []);
+  const [fen, setFen] = useState(controller.getFen());
 
   const { width, height } = useWindowDimensions();
   const insets = useSafeAreaInsets();
@@ -21,9 +18,9 @@ export function GameScreen() {
   );
 
   const onMove = (from: Square, to: Square): boolean => {
-    const move = game.move({ from, to, promotion: 'q' });
-    if (!move) return false;
-    setFen(game.fen());
+    const ok = controller.move(from, to);
+    if (!ok) return false;
+    setFen(controller.getFen());
     return true;
   };
 

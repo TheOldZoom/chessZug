@@ -1,14 +1,5 @@
-import {
-  StatusBar,
-  useColorScheme,
-  useWindowDimensions,
-  View,
-} from 'react-native';
-import {
-  SafeAreaProvider,
-  useSafeAreaInsets,
-} from 'react-native-safe-area-context';
-import { Chessboard } from '../components/Chessboard';
+import { StatusBar, useColorScheme } from 'react-native';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { GameScreen } from '../screens/GameScreen';
 
 function App() {
