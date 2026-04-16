@@ -89,8 +89,8 @@ jobs:
           path: mobile/android/app/build/outputs/apk/prod/release/app-prod-release.apk
 
   create-release:
-    needs: build-apk
-    if: needs.detect-version-change.outputs.should_build == 'true'
+    needs: [detect-version-change, build-apk]
+    if: needs.detect-version-change.outputs.should_build == 'true' && needs.build-apk.result == 'success'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/download-artifact@v4
