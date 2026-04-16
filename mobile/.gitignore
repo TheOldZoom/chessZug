@@ -24,7 +24,6 @@ xcuserdata
 **/.xcode.env.local
 
 # Android
-android/app/src/main/assets/stockfish/**/stockfish
 android/.gradle/
 android/app/build/
 android/build/
