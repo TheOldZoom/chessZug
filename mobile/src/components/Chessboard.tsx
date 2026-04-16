@@ -2,6 +2,7 @@ import { Chess, Square } from 'chess.js';
 import { useMemo, useState } from 'react';
 import { Image, Pressable, StyleSheet, Text } from 'react-native';
 import { View } from 'react-native';
+import { useThemeColors } from '../theme';
 
 type Props = {
   fen: string;
@@ -28,6 +29,7 @@ const files = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'] as const;
 const ranks = ['8', '7', '6', '5', '4', '3', '2', '1'] as const;
 
 export function Chessboard({ size = 320, fen, onMove }: Props) {
+  const theme = useThemeColors();
   const game = useMemo(() => new Chess(fen), [fen]);
   const [selected, setSelected] = useState<Square | null>(null);
   const cell = size / 8;
@@ -50,6 +52,7 @@ export function Chessboard({ size = 320, fen, onMove }: Props) {
     }
     const next = game.get(square);
     if (next && next.color === game.turn()) setSelected(square);
+    else setSelected(null);
   };
 
   return (
@@ -63,15 +66,24 @@ export function Chessboard({ size = 320, fen, onMove }: Props) {
               ? (`${piece.color}_${piece.type}` as keyof typeof pieceImages)
               : null;
             const isLight = (r + c) % 2 === 0;
+            const borderColor =
+              selected === square
+                ? theme.boardSelection
+                : isLight
+                  ? theme.boardSquareA
+                  : theme.boardSquareB;
             return (
               <Pressable
                 key={square}
                 onPress={() => onPressSquare(square)}
                 style={[
                   styles.cell,
-                  { width: cell, height: cell },
-                  isLight ? styles.light : styles.dark,
-                  selected === square ? styles.selected : undefined,
+                  { width: cell, height: cell, borderWidth: 2, borderColor },
+                  {
+                    backgroundColor: isLight
+                      ? theme.boardSquareA
+                      : theme.boardSquareB,
+                  },
                 ]}
               >
                 {c === 0 ? (
@@ -80,7 +92,9 @@ export function Chessboard({ size = 320, fen, onMove }: Props) {
                       styles.rankCoord,
                       {
                         fontSize: label,
-                        color: isLight ? '#b58863' : '#f0d9b5',
+                        color: isLight
+                          ? theme.boardSquareB
+                          : theme.boardSquareA,
                       },
                     ]}
                   >
@@ -93,7 +107,9 @@ export function Chessboard({ size = 320, fen, onMove }: Props) {
                       styles.fileCoord,
                       {
                         fontSize: label,
-                        color: isLight ? '#b58863' : '#f0d9b5',
+                        color: isLight
+                          ? theme.boardSquareB
+                          : theme.boardSquareA,
                       },
                     ]}
                   >
@@ -121,7 +137,4 @@ const styles = StyleSheet.create({
   cell: { alignItems: 'center', justifyContent: 'center' },
   rankCoord: { position: 'absolute', top: 2, left: 3, fontWeight: '700' },
   fileCoord: { position: 'absolute', bottom: 2, right: 3, fontWeight: '700' },
-  light: { backgroundColor: '#f0d9b5' },
-  dark: { backgroundColor: '#b58863' },
-  selected: { borderWidth: 2, borderColor: '#22c55e' },
 });

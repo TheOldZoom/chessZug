@@ -1,15 +1,25 @@
-import { StatusBar, useColorScheme } from 'react-native';
+import { StatusBar } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { GameScreen } from '../screens/GameScreen';
+import { ThemeProvider, useThemeSettings } from '../theme';
 
 function App() {
-  const isDarkMode = useColorScheme() === 'dark';
-
   return (
     <SafeAreaProvider>
-      <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
-      <AppContent />
+      <ThemeProvider>
+        <ThemedStatusBar />
+        <AppContent />
+      </ThemeProvider>
     </SafeAreaProvider>
+  );
+}
+
+function ThemedStatusBar() {
+  const { effectiveScheme } = useThemeSettings();
+  return (
+    <StatusBar
+      barStyle={effectiveScheme === 'dark' ? 'light-content' : 'dark-content'}
+    />
   );
 }
 

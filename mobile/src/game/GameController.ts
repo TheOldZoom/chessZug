@@ -19,4 +19,7 @@ export class GameController {
       return false;
     }
   }
+  getTurn(): string {
+    return this.game.turn();
+  }
 }
