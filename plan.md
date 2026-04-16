@@ -215,7 +215,7 @@ That’s it.
 
 ---
 
-## Phase 7 — Bluetooth
+## Phase 7 — Bluetooth (similar to how Dual works)
 
 - discover / pair nearby devices
 - send moves over a Bluetooth channel (same game-state rules as local play)
