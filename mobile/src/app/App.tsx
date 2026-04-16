@@ -1,7 +1,15 @@
-import { StatusBar, StyleSheet, useColorScheme } from 'react-native';
-import { NavigationContainer } from '@react-navigation/native';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { Navigator } from './Navigator';
+import {
+  StatusBar,
+  useColorScheme,
+  useWindowDimensions,
+  View,
+} from 'react-native';
+import {
+  SafeAreaProvider,
+  useSafeAreaInsets,
+} from 'react-native-safe-area-context';
+import { Chessboard } from '../components/Chessboard';
+import { GameScreen } from '../screens/GameScreen';
 
 function App() {
   const isDarkMode = useColorScheme() === 'dark';
@@ -15,17 +23,7 @@ function App() {
 }
 
 function AppContent() {
-  return (
-    <NavigationContainer>
-      <Navigator />
-    </NavigationContainer>
-  );
+  return <GameScreen />;
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-});
 
 export default App;
