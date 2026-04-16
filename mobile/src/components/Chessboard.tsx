@@ -1,6 +1,6 @@
 import { Chess, Square } from 'chess.js';
 import { useMemo, useState } from 'react';
-import { Image, Pressable, StyleSheet } from 'react-native';
+import { Image, Pressable, StyleSheet, Text } from 'react-native';
 import { View } from 'react-native';
 
 type Props = {
@@ -31,6 +31,7 @@ export function Chessboard({ size = 320, fen, onMove }: Props) {
   const game = useMemo(() => new Chess(fen), [fen]);
   const [selected, setSelected] = useState<Square | null>(null);
   const cell = size / 8;
+  const label = cell * 0.28;
 
   const onPressSquare = (square: Square) => {
     if (!selected) {
@@ -68,6 +69,32 @@ export function Chessboard({ size = 320, fen, onMove }: Props) {
                   selected === square ? styles.selected : undefined,
                 ]}
               >
+                {c === 0 ? (
+                  <Text
+                    style={[
+                      styles.rankCoord,
+                      {
+                        fontSize: label,
+                        color: isLight ? '#b58863' : '#f0d9b5',
+                      },
+                    ]}
+                  >
+                    {rank}
+                  </Text>
+                ) : null}
+                {r === 7 ? (
+                  <Text
+                    style={[
+                      styles.fileCoord,
+                      {
+                        fontSize: label,
+                        color: isLight ? '#b58863' : '#f0d9b5',
+                      },
+                    ]}
+                  >
+                    {file}
+                  </Text>
+                ) : null}
                 {key ? (
                   <Image
                     source={pieceImages[key]}
@@ -87,6 +114,8 @@ const styles = StyleSheet.create({
   board: {},
   row: { flexDirection: 'row' },
   cell: { alignItems: 'center', justifyContent: 'center' },
+  rankCoord: { position: 'absolute', top: 2, left: 3, fontWeight: '700' },
+  fileCoord: { position: 'absolute', bottom: 2, right: 3, fontWeight: '700' },
   light: { backgroundColor: '#f0d9b5' },
   dark: { backgroundColor: '#b58863' },
   selected: { borderWidth: 2, borderColor: '#22c55e' },
