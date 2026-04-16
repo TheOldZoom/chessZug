@@ -4,12 +4,13 @@ DIST_DIR=dist
 DEBUG_APK_PATH=app/build/outputs/apk/debug/app-debug.apk
 RELEASE_APK_PATH=app/build/outputs/apk/release/app-release.apk
 DEV_DEBUG_APK_PATH=app/build/outputs/apk/dev/debug/app-dev-debug.apk
-PROD_RELEASE_APK_PATH=app/build/outputs/apk/prod/release/app-prod-release.apk
+PROD_RELEASE_DIR=app/build/outputs/apk/prod/release
 
 DEBUG_APK_NAME=ChessZug-debug.apk
 RELEASE_APK_NAME=ChessZug-release.apk
 DEV_DEBUG_APK_NAME=ChessZug-dev-debug.apk
-PROD_RELEASE_APK_NAME=ChessZug-prod-release.apk
+PROD_RELEASE_ARM64_NAME=ChessZug-arm64.apk
+PROD_RELEASE_X86_64_NAME=ChessZug-x86_64.apk
 
 .PHONY: help install start android android-dev android-prod run build-debug build-release build-dev-debug build-prod-release clean logs devices doctor install-apk install-dev-apk dist-clean
 
@@ -88,7 +89,8 @@ move-dev-debug-apk:
 
 move-prod-release-apk:
 	mkdir -p $(DIST_DIR)
-	cp $(APP_DIR)/$(PROD_RELEASE_APK_PATH) $(DIST_DIR)/$(PROD_RELEASE_APK_NAME)
+	cp $(APP_DIR)/$(PROD_RELEASE_DIR)/app-arm64-v8a-prod-release.apk $(DIST_DIR)/$(PROD_RELEASE_ARM64_NAME)
+	cp $(APP_DIR)/$(PROD_RELEASE_DIR)/app-x86_64-prod-release.apk $(DIST_DIR)/$(PROD_RELEASE_X86_64_NAME)
 
 install-apk:
 	adb install $(DIST_DIR)/$(DEBUG_APK_NAME)
