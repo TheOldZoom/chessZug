@@ -175,9 +175,16 @@ tasks.register("fetchStockfish") {
                 ins.transferTo(outs)
             }
         }
-        project.exec {
-            workingDir extractRoot
-            commandLine "tar", "xf", tarFile.absolutePath, "stockfish/stockfish-android-armv8"
+        def tarProc = new ProcessBuilder(
+                "tar", "xf", tarFile.absolutePath, "stockfish/stockfish-android-armv8",
+        )
+                .directory(extractRoot)
+                .redirectErrorStream(true)
+                .start()
+        tarProc.inputStream.transferTo(java.io.OutputStream.nullOutputStream())
+        def tarExit = tarProc.waitFor()
+        if (tarExit != 0) {
+            throw new GradleException("tar extract failed with exit code ${tarExit}")
         }
         stockfishJniOut.parentFile.mkdirs()
         def extracted = new File(extractRoot, "stockfish/stockfish-android-armv8")
