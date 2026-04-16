@@ -41,7 +41,7 @@
 		},
 		{
 			"isGenerated" : true,
-			"path" : "/home/zoom/projects/chessZug/mobile/android/app/.cxx/Debug/5z543u3v/arm64-v8a/CMakeFiles/3.22.1-g37088a8/CMakeSystem.cmake"
+			"path" : "/home/zoom/projects/chessZug/mobile/android/app/.cxx/Debug/5z543u3v/x86_64/CMakeFiles/3.22.1-g37088a8/CMakeSystem.cmake"
 		},
 		{
 			"isExternal" : true,
@@ -307,7 +307,7 @@
 		},
 		{
 			"isGenerated" : true,
-			"path" : "/home/zoom/projects/chessZug/mobile/android/app/.cxx/Debug/5z543u3v/arm64-v8a/CMakeFiles/3.22.1-g37088a8/CMakeCCompiler.cmake"
+			"path" : "/home/zoom/projects/chessZug/mobile/android/app/.cxx/Debug/5z543u3v/x86_64/CMakeFiles/3.22.1-g37088a8/CMakeCCompiler.cmake"
 		},
 		{
 			"isCMake" : true,
@@ -541,7 +541,7 @@
 		},
 		{
 			"isGenerated" : true,
-			"path" : "/home/zoom/projects/chessZug/mobile/android/app/.cxx/Debug/5z543u3v/arm64-v8a/CMakeFiles/3.22.1-g37088a8/CMakeCXXCompiler.cmake"
+			"path" : "/home/zoom/projects/chessZug/mobile/android/app/.cxx/Debug/5z543u3v/x86_64/CMakeFiles/3.22.1-g37088a8/CMakeCXXCompiler.cmake"
 		},
 		{
 			"isCMake" : true,
@@ -692,7 +692,7 @@
 		},
 		{
 			"isGenerated" : true,
-			"path" : "/home/zoom/projects/chessZug/mobile/android/app/.cxx/Debug/5z543u3v/arm64-v8a/CMakeFiles/3.22.1-g37088a8/CMakeCCompiler.cmake"
+			"path" : "/home/zoom/projects/chessZug/mobile/android/app/.cxx/Debug/5z543u3v/x86_64/CMakeFiles/3.22.1-g37088a8/CMakeCCompiler.cmake"
 		},
 		{
 			"isCMake" : true,
@@ -786,7 +786,7 @@
 		},
 		{
 			"isGenerated" : true,
-			"path" : "/home/zoom/projects/chessZug/mobile/android/app/.cxx/Debug/5z543u3v/arm64-v8a/CMakeFiles/3.22.1-g37088a8/CMakeCXXCompiler.cmake"
+			"path" : "/home/zoom/projects/chessZug/mobile/android/app/.cxx/Debug/5z543u3v/x86_64/CMakeFiles/3.22.1-g37088a8/CMakeCXXCompiler.cmake"
 		},
 		{
 			"isExternal" : true,
@@ -822,19 +822,19 @@
 		},
 		{
 			"isExternal" : true,
-			"path" : "/home/zoom/projects/chessZug/mobile/android/app/.cxx/Debug/5z543u3v/prefab/arm64-v8a/prefab/lib/aarch64-linux-android/cmake/ReactAndroid/ReactAndroidConfigVersion.cmake"
+			"path" : "/home/zoom/projects/chessZug/mobile/android/app/.cxx/Debug/5z543u3v/prefab/x86_64/prefab/lib/x86_64-linux-android/cmake/ReactAndroid/ReactAndroidConfigVersion.cmake"
 		},
 		{
 			"isExternal" : true,
-			"path" : "/home/zoom/projects/chessZug/mobile/android/app/.cxx/Debug/5z543u3v/prefab/arm64-v8a/prefab/lib/aarch64-linux-android/cmake/ReactAndroid/ReactAndroidConfig.cmake"
+			"path" : "/home/zoom/projects/chessZug/mobile/android/app/.cxx/Debug/5z543u3v/prefab/x86_64/prefab/lib/x86_64-linux-android/cmake/ReactAndroid/ReactAndroidConfig.cmake"
 		},
 		{
 			"isExternal" : true,
-			"path" : "/home/zoom/projects/chessZug/mobile/android/app/.cxx/Debug/5z543u3v/prefab/arm64-v8a/prefab/lib/aarch64-linux-android/cmake/fbjni/fbjniConfigVersion.cmake"
+			"path" : "/home/zoom/projects/chessZug/mobile/android/app/.cxx/Debug/5z543u3v/prefab/x86_64/prefab/lib/x86_64-linux-android/cmake/fbjni/fbjniConfigVersion.cmake"
 		},
 		{
 			"isExternal" : true,
-			"path" : "/home/zoom/projects/chessZug/mobile/android/app/.cxx/Debug/5z543u3v/prefab/arm64-v8a/prefab/lib/aarch64-linux-android/cmake/fbjni/fbjniConfig.cmake"
+			"path" : "/home/zoom/projects/chessZug/mobile/android/app/.cxx/Debug/5z543u3v/prefab/x86_64/prefab/lib/x86_64-linux-android/cmake/fbjni/fbjniConfig.cmake"
 		},
 		{
 			"isExternal" : true,
@@ -856,7 +856,7 @@
 	"kind" : "cmakeFiles",
 	"paths" : 
 	{
-		"build" : "/home/zoom/projects/chessZug/mobile/android/app/.cxx/Debug/5z543u3v/arm64-v8a",
+		"build" : "/home/zoom/projects/chessZug/mobile/android/app/.cxx/Debug/5z543u3v/x86_64",
 		"source" : "/home/zoom/projects/chessZug/mobile/node_modules/react-native/ReactAndroid/cmake-utils/default-app-setup"
 	},
 	"version" : 

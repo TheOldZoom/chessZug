@@ -1,6 +1,10 @@
 APP_DIR=android
 DIST_DIR=dist
 
+JAVA_17_HOME ?= /usr/lib/jvm/java-17-openjdk
+export JAVA_HOME := $(JAVA_17_HOME)
+export PATH := $(JAVA_17_HOME)/bin:$(PATH)
+
 DEBUG_APK_PATH=app/build/outputs/apk/debug/app-debug.apk
 RELEASE_APK_PATH=app/build/outputs/apk/release/app-release.apk
 DEV_DEBUG_APK_PATH=app/build/outputs/apk/dev/debug/app-dev-debug.apk

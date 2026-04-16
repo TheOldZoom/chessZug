@@ -12,7 +12,11 @@ export class GameController {
   }
 
   move(from: Square, to: Square): boolean {
-    const move = this.game.move({ from, to, promotion: 'q' });
-    return Boolean(move);
+    try {
+      const move = this.game.move({ from, to, promotion: 'q' });
+      return Boolean(move);
+    } catch (error) {
+      return false;
+    }
   }
 }

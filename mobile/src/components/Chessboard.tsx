@@ -44,7 +44,12 @@ export function Chessboard({ size = 320, fen, onMove }: Props) {
       return;
     }
     const ok = onMove(selected, square);
-    setSelected(ok ? null : square);
+    if (ok) {
+      setSelected(null);
+      return;
+    }
+    const next = game.get(square);
+    if (next && next.color === game.turn()) setSelected(square);
   };
 
   return (
