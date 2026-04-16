@@ -127,6 +127,11 @@ android {
             universalApk false
         }
     }
+    packaging {
+        jniLibs {
+            useLegacyPackaging = true
+        }
+    }
 }
 
 dependencies {
@@ -139,3 +144,14 @@ dependencies {
         implementation jscFlavor
     }
 }
+
+def stockfishAsset = file("${projectDir}/src/main/assets/stockfish/arm64-v8a/stockfish")
+
+tasks.register("syncStockfishJniLib", Copy) {
+    onlyIf { stockfishAsset.exists() }
+    from stockfishAsset
+    into "${projectDir}/src/main/jniLibs/arm64-v8a"
+    rename { _ -> "libstockfish.so" }
+}
+
+tasks.named("preBuild").configure { dependsOn(tasks.named("syncStockfishJniLib")) }

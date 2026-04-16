@@ -26,9 +26,18 @@ export async function openStockfishEngine(): Promise<Engine> {
   }
   await native.prepare();
   return {
-    setPosition: fen => native.setPosition(fen),
-    go: movetime => native.goMovetime(movetime),
-    stop: () => native.stop(),
-    shutdown: () => native.quit(),
+    setPosition: async fen => {
+      await native.setPosition(fen);
+    },
+    go: async movetime => {
+      const best = await native.goMovetime(movetime);
+      return best;
+    },
+    stop: async () => {
+      await native.stop();
+    },
+    shutdown: async () => {
+      await native.quit();
+    },
   };
 }

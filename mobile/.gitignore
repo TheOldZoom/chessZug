@@ -24,6 +24,7 @@ xcuserdata
 **/.xcode.env.local
 
 # Android
+android/app/src/main/jniLibs/arm64-v8a/libstockfish.so
 android/.gradle/
 android/app/build/
 android/build/

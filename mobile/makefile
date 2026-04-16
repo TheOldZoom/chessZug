@@ -1,22 +1,21 @@
 APP_DIR=android
 DIST_DIR=dist
+DEV_APP_ID=com.chesszug.dev
+PROD_APP_ID=com.chesszug
 
 JAVA_17_HOME ?= /usr/lib/jvm/java-17-openjdk
 export JAVA_HOME := $(JAVA_17_HOME)
 export PATH := $(JAVA_17_HOME)/bin:$(PATH)
 
-DEBUG_APK_PATH=app/build/outputs/apk/debug/app-debug.apk
-RELEASE_APK_PATH=app/build/outputs/apk/release/app-release.apk
-DEV_DEBUG_APK_PATH=app/build/outputs/apk/dev/debug/app-dev-debug.apk
+DEV_DEBUG_APK_PATH=app/build/outputs/apk/dev/debug/app-dev-arm64-v8a-debug.apk
+PROD_DEBUG_APK_PATH=app/build/outputs/apk/prod/debug/app-prod-arm64-v8a-debug.apk
 PROD_RELEASE_DIR=app/build/outputs/apk/prod/release
 
-DEBUG_APK_NAME=ChessZug-debug.apk
-RELEASE_APK_NAME=ChessZug-release.apk
 DEV_DEBUG_APK_NAME=ChessZug-dev-debug.apk
+PROD_DEBUG_APK_NAME=ChessZug-prod-debug.apk
 PROD_RELEASE_ARM64_NAME=ChessZug-arm64.apk
-PROD_RELEASE_X86_64_NAME=ChessZug-x86_64.apk
 
-.PHONY: help install start android android-dev android-prod run build-debug build-release build-dev-debug build-prod-release clean logs devices doctor install-apk install-dev-apk dist-clean
+.PHONY: help install start android android-dev android-prod run build-debug build-release build-dev-debug build-prod-debug build-prod-release clean logs devices doctor install-apk install-dev-apk install-prod-debug-apk dist-clean
 
 # ---------------- HELP ----------------
 
@@ -30,11 +29,11 @@ help:
 	@echo ""
 	@echo "  make build-debug    - build dev debug APK (outputs to dist/)"
 	@echo "  make build-release  - build prod release APK (outputs to dist/)"
-	@echo "  make build-dev-debug    - build dev debug APK (outputs to dist/)"
 	@echo "  make build-prod-release - build prod release APK (outputs to dist/)"
 	@echo ""
-	@echo "  make install-apk    - install debug APK from dist/"
-	@echo "  make install-dev-apk - install dev debug APK from dist/"
+	@echo "  make install-apk    - build and install dev debug APK (com.chesszug.dev)"
+	@echo "  make install-dev-apk - adb install dev debug APK from dist/ (run build-dev-debug first)"
+	@echo "  make install-prod-debug-apk - adb install prod debug APK from dist/"
 	@echo "  make clean          - clean android build"
 	@echo "  make dist-clean     - remove dist/ folder"
 	@echo ""
@@ -54,10 +53,10 @@ android:
 	@make android-dev
 
 android-dev:
-	npx react-native run-android --mode devDebug
+	npx react-native run-android --mode devDebug --appId $(DEV_APP_ID)
 
 android-prod:
-	npx react-native run-android --mode prodDebug
+	npx react-native run-android --mode prodDebug --appId $(PROD_APP_ID)
 
 run: android
 
@@ -79,28 +78,30 @@ build-prod-release:
 
 # ---------------- ARTIFACT HANDLING ----------------
 
-move-debug-apk:
-	mkdir -p $(DIST_DIR)
-	cp $(APP_DIR)/$(DEBUG_APK_PATH) $(DIST_DIR)/$(DEBUG_APK_NAME)
-
-move-release-apk:
-	mkdir -p $(DIST_DIR)
-	cp $(APP_DIR)/$(RELEASE_APK_PATH) $(DIST_DIR)/$(RELEASE_APK_NAME)
-
 move-dev-debug-apk:
 	mkdir -p $(DIST_DIR)
 	cp $(APP_DIR)/$(DEV_DEBUG_APK_PATH) $(DIST_DIR)/$(DEV_DEBUG_APK_NAME)
 
+move-prod-debug-apk:
+	mkdir -p $(DIST_DIR)
+	cp $(APP_DIR)/$(PROD_DEBUG_APK_PATH) $(DIST_DIR)/$(PROD_DEBUG_APK_NAME)
+
 move-prod-release-apk:
 	mkdir -p $(DIST_DIR)
 	cp $$(find $(APP_DIR)/$(PROD_RELEASE_DIR) -maxdepth 1 -name '*.apk' | grep 'arm64-v8a' | head -n 1) $(DIST_DIR)/$(PROD_RELEASE_ARM64_NAME)
-	cp $$(find $(APP_DIR)/$(PROD_RELEASE_DIR) -maxdepth 1 -name '*.apk' | grep 'x86_64' | head -n 1) $(DIST_DIR)/$(PROD_RELEASE_X86_64_NAME)
 
-install-apk:
-	adb install $(DIST_DIR)/$(DEBUG_APK_NAME)
+install-apk: build-dev-debug
+	adb install -r $(DIST_DIR)/$(DEV_DEBUG_APK_NAME)
 
 install-dev-apk:
-	adb install $(DIST_DIR)/$(DEV_DEBUG_APK_NAME)
+	adb install -r $(DIST_DIR)/$(DEV_DEBUG_APK_NAME)
+
+build-prod-debug:
+	cd $(APP_DIR) && ./gradlew assembleProdDebug
+	@make move-prod-debug-apk
+
+install-prod-debug-apk: build-prod-debug
+	adb install -r $(DIST_DIR)/$(PROD_DEBUG_APK_NAME)
 
 # ---------------- UTIL ----------------
 

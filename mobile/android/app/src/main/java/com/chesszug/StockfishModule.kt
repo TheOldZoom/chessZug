@@ -1,5 +1,7 @@
 package com.chesszug
 
+import android.system.Os
+import android.system.OsConstants
 import com.facebook.react.bridge.Promise
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactContextBaseJavaModule
@@ -40,7 +42,7 @@ class StockfishModule(reactContext: ReactApplicationContext) :
       try {
         synchronized(ioLock) {
           quitLocked()
-          val path = copyBinary(reactApplicationContext)
+          val path = engineExecutablePath(reactApplicationContext)
           val pb = ProcessBuilder(path)
           pb.redirectErrorStream(true)
           val p = pb.start()
@@ -189,18 +191,45 @@ class StockfishModule(reactContext: ReactApplicationContext) :
     process = null
   }
 
-  private fun copyBinary(context: android.content.Context): String {
+  private fun engineExecutablePath(context: android.content.Context): String {
+    val fromApk = File(context.applicationInfo.nativeLibraryDir, "libstockfish.so")
+    if (fromApk.isFile && fromApk.length() > 0L) {
+      return fromApk.absolutePath
+    }
+    return copyBinaryFromAssets(context)
+  }
+
+  private fun copyBinaryFromAssets(context: android.content.Context): String {
     val abi = pickAbiFolder()
     val assetPath = "stockfish/$abi/stockfish"
     val outFile = File(context.filesDir, "stockfish-$abi")
+    if (outFile.exists() && !outFile.delete()) {
+      throw IllegalStateException("Could not remove old stockfish in filesDir")
+    }
     context.assets.open(assetPath).use { input ->
       FileOutputStream(outFile).use { output -> input.copyTo(output) }
     }
-    outFile.setReadable(true, false)
-    if (!outFile.setExecutable(true, false)) {
-      throw IllegalStateException("Could not chmod stockfish")
+    val path = outFile.absolutePath
+    try {
+      Os.chmod(
+        path,
+        OsConstants.S_IRUSR or OsConstants.S_IXUSR,
+      )
+    } catch (e: Exception) {
+      if (!outFile.setWritable(false, false) ||
+          !outFile.setReadable(true, true) ||
+          !outFile.setExecutable(true, true)
+      ) {
+        throw IllegalStateException("Could not chmod stockfish in filesDir", e)
+      }
     }
-    return outFile.absolutePath
+    try {
+      ProcessBuilder("/system/bin/chmod", "0500", path)
+          .redirectErrorStream(true)
+          .start()
+          .waitFor()
+    } catch (_: Exception) {}
+    return path
   }
 
   private fun pickAbiFolder(): String = "arm64-v8a"

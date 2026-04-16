@@ -1,14 +1,12 @@
+import { useNavigation } from '@react-navigation/native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useMemo, useState } from 'react';
 import { Square } from 'chess.js';
-import {
-  useWindowDimensions,
-  View,
-  Text,
-  Pressable,
-} from 'react-native';
+import { useWindowDimensions, View, Text, Pressable } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Chessboard } from '../components/Chessboard';
 import { GameController } from '../game/GameController';
+import type { RootStackParamList } from '../navigation/types';
 import {
   useThemeColors,
   useThemeSettings,
@@ -21,7 +19,10 @@ const preferenceLabel: Record<ThemePreference, string> = {
   dark: 'Dark',
 };
 
+type GameNav = NativeStackNavigationProp<RootStackParamList, 'Game'>;
+
 export function GameScreen() {
+  const navigation = useNavigation<GameNav>();
   const theme = useThemeColors();
   const { preference, cyclePreference } = useThemeSettings();
   const controller = useMemo(() => new GameController(), []);
@@ -41,7 +42,9 @@ export function GameScreen() {
 
   const onMove = (from: Square, to: Square): boolean => {
     const ok = controller.move(from, to);
-    if (!ok) return false;
+    if (!ok) {
+      return false;
+    }
     setFen(controller.getFen());
     setTurn(controller.getTurn());
     return true;
@@ -73,27 +76,50 @@ export function GameScreen() {
         >
           {turnText}
         </Text>
-        <Pressable
-          onPress={cyclePreference}
-          style={{
-            paddingVertical: 8,
-            paddingHorizontal: 12,
-            borderRadius: theme.radiusMd,
-            backgroundColor: theme.secondary,
-            borderWidth: 1,
-            borderColor: theme.border,
-          }}
-        >
-          <Text
+        <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
+          <Pressable
+            onPress={() => navigation.navigate('AiTest')}
             style={{
-              fontSize: 15,
-              fontWeight: '600',
-              color: theme.secondaryText,
+              paddingVertical: 8,
+              paddingHorizontal: 12,
+              borderRadius: theme.radiusMd,
+              backgroundColor: theme.secondary,
+              borderWidth: 1,
+              borderColor: theme.border,
             }}
           >
-            Theme: {preferenceLabel[preference]}
-          </Text>
-        </Pressable>
+            <Text
+              style={{
+                fontSize: 15,
+                fontWeight: '600',
+                color: theme.secondaryText,
+              }}
+            >
+              AI test
+            </Text>
+          </Pressable>
+          <Pressable
+            onPress={cyclePreference}
+            style={{
+              paddingVertical: 8,
+              paddingHorizontal: 12,
+              borderRadius: theme.radiusMd,
+              backgroundColor: theme.secondary,
+              borderWidth: 1,
+              borderColor: theme.border,
+            }}
+          >
+            <Text
+              style={{
+                fontSize: 15,
+                fontWeight: '600',
+                color: theme.secondaryText,
+              }}
+            >
+              Theme: {preferenceLabel[preference]}
+            </Text>
+          </Pressable>
+        </View>
       </View>
       <View
         style={{
