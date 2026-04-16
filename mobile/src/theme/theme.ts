@@ -1,4 +1,42 @@
-import type { Theme } from './types';
+export type ThemePreference = 'system' | 'light' | 'dark';
+
+export type Theme = {
+  screenBackground: string;
+  screenText: string;
+  boardSquareA: string;
+  boardSquareB: string;
+  boardSelection: string;
+  surface: string;
+  surfaceText: string;
+  overlay: string;
+  overlayText: string;
+  primary: string;
+  primaryText: string;
+  secondary: string;
+  secondaryText: string;
+  muted: string;
+  mutedText: string;
+  accent: string;
+  accentText: string;
+  destructive: string;
+  destructiveText: string;
+  border: string;
+  inputBorder: string;
+  focusRing: string;
+  chart1: string;
+  chart2: string;
+  chart3: string;
+  chart4: string;
+  chart5: string;
+  fontSans: string;
+  fontSerif: string;
+  fontMono: string;
+  radiusSm: number;
+  radiusMd: number;
+  radiusLg: number;
+  radiusXl: number;
+  spacing: number;
+};
 
 const rem = 16;
 const radiusBaseRem = 0.625;

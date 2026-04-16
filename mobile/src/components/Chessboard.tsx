@@ -2,7 +2,7 @@ import { Chess, Color, Square } from 'chess.js';
 import { useMemo, useState } from 'react';
 import { Image, Pressable, StyleSheet, Text } from 'react-native';
 import { View } from 'react-native';
-import { useThemeColors } from '../theme';
+import { useThemeColors } from '../theme/ThemeProvider';
 
 type Props = {
   fen: string;
@@ -29,12 +29,7 @@ const pieceImages = {
 const files = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'] as const;
 const ranks = ['8', '7', '6', '5', '4', '3', '2', '1'] as const;
 
-export function Chessboard({
-  size = 320,
-  fen,
-  onMove,
-  humanColor,
-}: Props) {
+export function Chessboard({ size = 320, fen, onMove, humanColor }: Props) {
   const theme = useThemeColors();
   const game = useMemo(() => new Chess(fen), [fen]);
   const [selected, setSelected] = useState<Square | null>(null);
@@ -80,8 +75,8 @@ export function Chessboard({
               selected === square
                 ? theme.boardSelection
                 : isLight
-                  ? theme.boardSquareA
-                  : theme.boardSquareB;
+                ? theme.boardSquareA
+                : theme.boardSquareB;
             return (
               <Pressable
                 key={square}

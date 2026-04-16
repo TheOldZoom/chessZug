@@ -9,8 +9,7 @@
 					"childIndexes" : 
 					[
 						1,
-						2,
-						3
+						2
 					],
 					"jsonFile" : "directory-.-Debug-f5ebdc15457944623624.json",
 					"minimumCMakeVersion" : 
@@ -51,21 +50,6 @@
 					"source" : "/home/zoom/projects/chessZug/mobile/node_modules/react-native-safe-area-context/android/src/main/jni",
 					"targetIndexes" : 
 					[
-						3
-					]
-				},
-				{
-					"build" : "rnscreens_autolinked_build",
-					"jsonFile" : "directory-rnscreens_autolinked_build-Debug-b7e608cb57acf604f35d.json",
-					"minimumCMakeVersion" : 
-					{
-						"string" : "3.13"
-					},
-					"parentIndex" : 0,
-					"projectIndex" : 0,
-					"source" : "/home/zoom/projects/chessZug/mobile/node_modules/react-native-screens/android/src/main/jni",
-					"targetIndexes" : 
-					[
 						2
 					]
 				}
@@ -78,16 +62,14 @@
 					[
 						0,
 						1,
-						2,
-						3
+						2
 					],
 					"name" : "appmodules",
 					"targetIndexes" : 
 					[
 						0,
 						1,
-						2,
-						3
+						2
 					]
 				}
 			],
@@ -96,7 +78,7 @@
 				{
 					"directoryIndex" : 0,
 					"id" : "appmodules::@6890427a1f51a3e7e1df",
-					"jsonFile" : "target-appmodules-Debug-c232cafe0fdeacaf9c2e.json",
+					"jsonFile" : "target-appmodules-Debug-50111e8553049e29a2a6.json",
 					"name" : "appmodules",
 					"projectIndex" : 0
 				},
@@ -105,13 +87,6 @@
 					"id" : "react_codegen_rngesturehandler_codegen::@39f233abcd2c728bc6ec",
 					"jsonFile" : "target-react_codegen_rngesturehandler_codegen-Debug-7acdfb82659395db0d96.json",
 					"name" : "react_codegen_rngesturehandler_codegen",
-					"projectIndex" : 0
-				},
-				{
-					"directoryIndex" : 3,
-					"id" : "react_codegen_rnscreens::@25bcbd507e98d3a854ad",
-					"jsonFile" : "target-react_codegen_rnscreens-Debug-8aa3e3aa05ad437ab360.json",
-					"name" : "react_codegen_rnscreens",
 					"projectIndex" : 0
 				},
 				{

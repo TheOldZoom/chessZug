@@ -1,8 +1,8 @@
-// THIS IS JUST A TEST, DELETE LATER && DONT UPDATE
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Square } from 'chess.js';
 import {
   ActivityIndicator,
+  BackHandler,
   Platform,
   Pressable,
   Text,
@@ -11,14 +11,13 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Chessboard } from '../components/Chessboard';
-import type { Engine } from '../engine/EngineManager';
-import { openStockfishEngine } from '../engine/EngineManager';
 import { GameController } from '../game/GameController';
+import { openStockfishEngine, type Engine } from '../engine/EngineManager';
 import {
   useThemeColors,
   useThemeSettings,
-  type ThemePreference,
-} from '../theme';
+} from '../theme/ThemeProvider';
+import type { ThemePreference } from '../theme/theme';
 
 const preferenceLabel: Record<ThemePreference, string> = {
   system: 'Auto',
@@ -26,7 +25,11 @@ const preferenceLabel: Record<ThemePreference, string> = {
   dark: 'Dark',
 };
 
-export function AiTestScreen() {
+type Props = {
+  onBack: () => void;
+};
+
+export function AiTestScreen({ onBack }: Props) {
   const theme = useThemeColors();
   const { preference, cyclePreference } = useThemeSettings();
   const [controller, setController] = useState(() => new GameController());
@@ -35,6 +38,17 @@ export function AiTestScreen() {
   const [engineReady, setEngineReady] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const engineRef = useRef<Engine | null>(null);
+
+  useEffect(() => {
+    if (Platform.OS !== 'android') {
+      return;
+    }
+    const sub = BackHandler.addEventListener('hardwareBackPress', () => {
+      onBack();
+      return true;
+    });
+    return () => sub.remove();
+  }, [onBack]);
 
   useEffect(() => {
     if (Platform.OS !== 'android') {
@@ -153,16 +167,47 @@ export function AiTestScreen() {
             gap: 8,
           }}
         >
-          <Text
+          <View
             style={{
-              fontSize: 18,
-              fontWeight: 'bold',
-              color: theme.screenText,
+              flexDirection: 'row',
+              alignItems: 'center',
+              gap: 8,
               flexShrink: 1,
+              flex: 1,
             }}
           >
-            White vs Stockfish
-          </Text>
+            <Pressable
+              onPress={onBack}
+              style={{
+                paddingVertical: 8,
+                paddingHorizontal: 12,
+                borderRadius: theme.radiusMd,
+                backgroundColor: theme.secondary,
+                borderWidth: 1,
+                borderColor: theme.border,
+              }}
+            >
+              <Text
+                style={{
+                  fontSize: 14,
+                  fontWeight: '600',
+                  color: theme.secondaryText,
+                }}
+              >
+                Back
+              </Text>
+            </Pressable>
+            <Text
+              style={{
+                fontSize: 18,
+                fontWeight: 'bold',
+                color: theme.screenText,
+                flexShrink: 1,
+              }}
+            >
+              White vs Stockfish
+            </Text>
+          </View>
           <Pressable
             onPress={cyclePreference}
             style={{

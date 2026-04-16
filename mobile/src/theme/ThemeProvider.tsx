@@ -7,8 +7,8 @@ import {
   type ReactNode,
 } from 'react';
 import { useColorScheme, type ColorSchemeName } from 'react-native';
-import type { Theme, ThemePreference } from './types';
-import { themes } from './themes';
+import type { Theme, ThemePreference } from './theme';
+import { themes } from './theme';
 
 type ThemeContextValue = {
   theme: Theme;

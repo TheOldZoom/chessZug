@@ -46,7 +46,6 @@ if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for each subdirectory.
   include("/home/zoom/projects/chessZug/mobile/android/app/.cxx/Debug/5z543u3v/arm64-v8a/rngesturehandler_codegen_autolinked_build/cmake_install.cmake")
   include("/home/zoom/projects/chessZug/mobile/android/app/.cxx/Debug/5z543u3v/arm64-v8a/safeareacontext_autolinked_build/cmake_install.cmake")
-  include("/home/zoom/projects/chessZug/mobile/android/app/.cxx/Debug/5z543u3v/arm64-v8a/rnscreens_autolinked_build/cmake_install.cmake")
 
 endif()
 
