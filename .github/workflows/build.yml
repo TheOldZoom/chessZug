@@ -103,8 +103,19 @@ jobs:
         run: |
           mkdir -p "$GITHUB_WORKSPACE/release-apks"
           SRC="$GITHUB_WORKSPACE/mobile/android/app/build/outputs/apk/prod/release"
-          cp "$SRC/app-arm64-v8a-prod-release.apk" "$GITHUB_WORKSPACE/release-apks/ChessZug-arm64.apk"
-          cp "$SRC/app-x86_64-prod-release.apk" "$GITHUB_WORKSPACE/release-apks/ChessZug-x86_64.apk"
+          ls -la "$SRC"
+          ARM64_APK="$(find "$SRC" -maxdepth 1 -name '*.apk' | grep 'arm64-v8a' | head -n 1)"
+          X86_64_APK="$(find "$SRC" -maxdepth 1 -name '*.apk' | grep 'x86_64' | head -n 1)"
+          if [ -z "$ARM64_APK" ] || [ ! -f "$ARM64_APK" ]; then
+            echo "No arm64-v8a APK found under $SRC"
+            exit 1
+          fi
+          if [ -z "$X86_64_APK" ] || [ ! -f "$X86_64_APK" ]; then
+            echo "No x86_64 APK found under $SRC"
+            exit 1
+          fi
+          cp "$ARM64_APK" "$GITHUB_WORKSPACE/release-apks/ChessZug-arm64.apk"
+          cp "$X86_64_APK" "$GITHUB_WORKSPACE/release-apks/ChessZug-x86_64.apk"
       - name: Upload prod release APKs
         uses: actions/upload-artifact@v4
         with:

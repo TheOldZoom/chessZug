@@ -89,8 +89,8 @@ move-dev-debug-apk:
 
 move-prod-release-apk:
 	mkdir -p $(DIST_DIR)
-	cp $(APP_DIR)/$(PROD_RELEASE_DIR)/app-arm64-v8a-prod-release.apk $(DIST_DIR)/$(PROD_RELEASE_ARM64_NAME)
-	cp $(APP_DIR)/$(PROD_RELEASE_DIR)/app-x86_64-prod-release.apk $(DIST_DIR)/$(PROD_RELEASE_X86_64_NAME)
+	cp $$(find $(APP_DIR)/$(PROD_RELEASE_DIR) -maxdepth 1 -name '*.apk' | grep 'arm64-v8a' | head -n 1) $(DIST_DIR)/$(PROD_RELEASE_ARM64_NAME)
+	cp $$(find $(APP_DIR)/$(PROD_RELEASE_DIR) -maxdepth 1 -name '*.apk' | grep 'x86_64' | head -n 1) $(DIST_DIR)/$(PROD_RELEASE_X86_64_NAME)
 
 install-apk:
 	adb install $(DIST_DIR)/$(DEBUG_APK_NAME)
