@@ -71,7 +71,7 @@ export function Chessboard({ size = 320, fen, onMove }: Props) {
                 {key ? (
                   <Image
                     source={pieceImages[key]}
-                    style={{ width: cell * 0.82, height: cell * 0.82 }}
+                    style={{ width: cell * 0.95, height: cell * 0.95 }}
                     resizeMode="contain"
                   />
                 ) : null}
