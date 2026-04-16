@@ -23,7 +23,8 @@
 			"/home/zoom/projects/chessZug/mobile/node_modules/react-native/ReactAndroid/cmake-utils/ReactNative-application.cmake",
 			"CMakeLists.txt",
 			"/home/zoom/projects/chessZug/mobile/node_modules/react-native/ReactCommon/cmake-utils/react-native-flags.cmake",
-			"/home/zoom/projects/chessZug/mobile/node_modules/react-native-safe-area-context/android/src/main/jni/CMakeLists.txt"
+			"/home/zoom/projects/chessZug/mobile/node_modules/react-native-safe-area-context/android/src/main/jni/CMakeLists.txt",
+			"/home/zoom/projects/chessZug/mobile/node_modules/react-native-screens/android/src/main/jni/CMakeLists.txt"
 		],
 		"nodes" : 
 		[
@@ -90,6 +91,15 @@
 				"file" : 3,
 				"line" : 62,
 				"parent" : 10
+			},
+			{
+				"file" : 4
+			},
+			{
+				"command" : 6,
+				"file" : 4,
+				"line" : 63,
+				"parent" : 12
 			}
 		]
 	},
@@ -183,6 +193,10 @@
 					"path" : "/home/zoom/projects/chessZug/mobile/node_modules/react-native-safe-area-context/android/src/main/jni"
 				},
 				{
+					"backtrace" : 13,
+					"path" : "/home/zoom/projects/chessZug/mobile/node_modules/react-native-screens/android/src/main/jni"
+				},
+				{
 					"backtrace" : 4,
 					"path" : "/home/zoom/projects/chessZug/mobile/node_modules/react-native-gesture-handler/android/build/generated/source/codegen/jni/."
 				},
@@ -205,6 +219,22 @@
 				{
 					"backtrace" : 4,
 					"path" : "/home/zoom/projects/chessZug/mobile/node_modules/react-native-safe-area-context/android/src/main/jni/../../../build/generated/source/codegen/jni/react/renderer/components/safeareacontext"
+				},
+				{
+					"backtrace" : 4,
+					"path" : "/home/zoom/projects/chessZug/mobile/node_modules/react-native-screens/android/src/main/jni/."
+				},
+				{
+					"backtrace" : 4,
+					"path" : "/home/zoom/projects/chessZug/mobile/node_modules/react-native-screens/android/src/main/jni/../../../../common/cpp"
+				},
+				{
+					"backtrace" : 4,
+					"path" : "/home/zoom/projects/chessZug/mobile/node_modules/react-native-screens/android/src/main/jni/../../../build/generated/source/codegen/jni"
+				},
+				{
+					"backtrace" : 4,
+					"path" : "/home/zoom/projects/chessZug/mobile/node_modules/react-native-screens/android/src/main/jni/../../../build/generated/source/codegen/jni/react/renderer/components/rnscreens"
 				},
 				{
 					"backtrace" : 5,
@@ -238,11 +268,15 @@
 	[
 		{
 			"backtrace" : 4,
+			"id" : "react_codegen_rngesturehandler_codegen::@39f233abcd2c728bc6ec"
+		},
+		{
+			"backtrace" : 4,
 			"id" : "react_codegen_safeareacontext::@7984cd80db47aa7b952a"
 		},
 		{
 			"backtrace" : 4,
-			"id" : "react_codegen_rngesturehandler_codegen::@39f233abcd2c728bc6ec"
+			"id" : "react_codegen_rnscreens::@25bcbd507e98d3a854ad"
 		}
 	],
 	"id" : "appmodules::@6890427a1f51a3e7e1df",
@@ -257,6 +291,11 @@
 			{
 				"backtrace" : 4,
 				"fragment" : "/home/zoom/projects/chessZug/mobile/android/app/build/intermediates/cxx/Debug/5z543u3v/obj/arm64-v8a/libreact_codegen_safeareacontext.so",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 4,
+				"fragment" : "/home/zoom/projects/chessZug/mobile/android/app/build/intermediates/cxx/Debug/5z543u3v/obj/arm64-v8a/libreact_codegen_rnscreens.so",
 				"role" : "libraries"
 			},
 			{

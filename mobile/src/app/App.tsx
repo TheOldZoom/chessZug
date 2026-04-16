@@ -1,18 +1,25 @@
-import { useState } from 'react';
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { StatusBar } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import type { RootStackParamList } from '../navigation/types';
 import { AiTestScreen } from '../screens/AiTestScreen';
 import { GameScreen } from '../screens/GameScreen';
 import { ThemeProvider, useThemeSettings } from '../theme/ThemeProvider';
 
-type Route = 'game' | 'aiTest';
+const Stack = createNativeStackNavigator<RootStackParamList>();
 
 function App() {
   return (
     <SafeAreaProvider>
       <ThemeProvider>
         <ThemedStatusBar />
-        <AppContent />
+        <NavigationContainer>
+          <Stack.Navigator screenOptions={{ headerShown: false }}>
+            <Stack.Screen name="Game" component={GameScreen} />
+            <Stack.Screen name="AiTest" component={AiTestScreen} />
+          </Stack.Navigator>
+        </NavigationContainer>
       </ThemeProvider>
     </SafeAreaProvider>
   );
@@ -25,14 +32,6 @@ function ThemedStatusBar() {
       barStyle={effectiveScheme === 'dark' ? 'light-content' : 'dark-content'}
     />
   );
-}
-
-function AppContent() {
-  const [route, setRoute] = useState<Route>('game');
-  if (route === 'aiTest') {
-    return <AiTestScreen onBack={() => setRoute('game')} />;
-  }
-  return <GameScreen onOpenAiTest={() => setRoute('aiTest')} />;
 }
 
 export default App;

@@ -1,8 +1,9 @@
+import { useNavigation } from '@react-navigation/native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Square } from 'chess.js';
 import {
   ActivityIndicator,
-  BackHandler,
   Platform,
   Pressable,
   Text,
@@ -13,10 +14,8 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Chessboard } from '../components/Chessboard';
 import { GameController } from '../game/GameController';
 import { openStockfishEngine, type Engine } from '../engine/EngineManager';
-import {
-  useThemeColors,
-  useThemeSettings,
-} from '../theme/ThemeProvider';
+import { useThemeColors, useThemeSettings } from '../theme/ThemeProvider';
+import type { RootStackParamList } from '../navigation/types';
 import type { ThemePreference } from '../theme/theme';
 
 const preferenceLabel: Record<ThemePreference, string> = {
@@ -25,11 +24,10 @@ const preferenceLabel: Record<ThemePreference, string> = {
   dark: 'Dark',
 };
 
-type Props = {
-  onBack: () => void;
-};
+type AiTestNav = NativeStackNavigationProp<RootStackParamList, 'AiTest'>;
 
-export function AiTestScreen({ onBack }: Props) {
+export function AiTestScreen() {
+  const navigation = useNavigation<AiTestNav>();
   const theme = useThemeColors();
   const { preference, cyclePreference } = useThemeSettings();
   const [controller, setController] = useState(() => new GameController());
@@ -38,17 +36,6 @@ export function AiTestScreen({ onBack }: Props) {
   const [engineReady, setEngineReady] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const engineRef = useRef<Engine | null>(null);
-
-  useEffect(() => {
-    if (Platform.OS !== 'android') {
-      return;
-    }
-    const sub = BackHandler.addEventListener('hardwareBackPress', () => {
-      onBack();
-      return true;
-    });
-    return () => sub.remove();
-  }, [onBack]);
 
   useEffect(() => {
     if (Platform.OS !== 'android') {
@@ -177,7 +164,7 @@ export function AiTestScreen({ onBack }: Props) {
             }}
           >
             <Pressable
-              onPress={onBack}
+              onPress={() => navigation.goBack()}
               style={{
                 paddingVertical: 8,
                 paddingHorizontal: 12,

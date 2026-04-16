@@ -1,3 +1,5 @@
+import { useNavigation } from '@react-navigation/native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useMemo, useState } from 'react';
 import { Square } from 'chess.js';
 import {
@@ -14,6 +16,7 @@ import {
   useThemeColors,
   useThemeSettings,
 } from '../theme/ThemeProvider';
+import type { RootStackParamList } from '../navigation/types';
 import type { ThemePreference } from '../theme/theme';
 
 const preferenceLabel: Record<ThemePreference, string> = {
@@ -22,9 +25,7 @@ const preferenceLabel: Record<ThemePreference, string> = {
   dark: 'Dark',
 };
 
-type Props = {
-  onOpenAiTest: () => void;
-};
+type GameNav = NativeStackNavigationProp<RootStackParamList, 'Game'>;
 
 function formatPGNLines(sans: string[]): string[] {
   const lines: string[] = [];
@@ -37,7 +38,8 @@ function formatPGNLines(sans: string[]): string[] {
   return lines;
 }
 
-export function GameScreen({ onOpenAiTest }: Props) {
+export function GameScreen() {
+  const navigation = useNavigation<GameNav>();
   const theme = useThemeColors();
   const { preference, cyclePreference } = useThemeSettings();
   const controller = useMemo(() => new GameController(), []);
@@ -125,7 +127,7 @@ export function GameScreen({ onOpenAiTest }: Props) {
             </Text>
           </Pressable>
           <Pressable
-            onPress={onOpenAiTest}
+            onPress={() => navigation.navigate('AiTest')}
             style={{
               paddingVertical: 8,
               paddingHorizontal: 12,
