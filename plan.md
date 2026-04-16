@@ -9,6 +9,7 @@ A **local chess training app**:
 - Get evaluation feedback
 - Save games
 - Practice positions (puzzles later)
+- Bluetooth local play later (nearby device, before full multiplayer)
 - Multiplayer later (separate system entirely)
 
 ---
@@ -214,7 +215,15 @@ That’s it.
 
 ---
 
-## Phase 7 — Multiplayer (completely separate system)
+## Phase 7 — Bluetooth
+
+- discover / pair nearby devices
+- send moves over a Bluetooth channel (same game-state rules as local play)
+- keep separate from engine and from online multiplayer
+
+---
+
+## Phase 8 — Multiplayer (completely separate system)
 
 - do NOT mix with engine logic
 - treat as different product layer
