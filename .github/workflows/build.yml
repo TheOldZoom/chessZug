@@ -15,6 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       should_build: ${{ steps.detect.outputs.should_build }}
+      release_tag: ${{ steps.detect.outputs.release_tag }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -22,36 +23,48 @@ jobs:
       - id: detect
         shell: bash
         run: |
+          VERSION="$(node -p "require('./mobile/package.json').version")"
+          RELEASE_TAG="v$VERSION"
+          echo "release_tag=$RELEASE_TAG" >> "$GITHUB_OUTPUT"
           BEFORE_SHA="${{ github.event.before }}"
           AFTER_SHA="${{ github.sha }}"
           if [ -z "$BEFORE_SHA" ] || [ "$BEFORE_SHA" = "0000000000000000000000000000000000000000" ]; then
             BEFORE_SHA="$(git rev-list --max-count=1 "$AFTER_SHA^" 2>/dev/null || true)"
           fi
+          VERSION_CHANGED=false
           if [ -z "$BEFORE_SHA" ]; then
-            echo "should_build=true" >> "$GITHUB_OUTPUT"
+            VERSION_CHANGED=true
+          fi
+          if [ "$VERSION_CHANGED" = "false" ]; then
+            DIFF="$(git diff "$BEFORE_SHA" "$AFTER_SHA" -- mobile/package.json mobile/android/app/build.gradle || true)"
+            if echo "$DIFF" | grep -E '^[+-].*"version"\s*:' >/dev/null; then
+              VERSION_CHANGED=true
+            fi
+            if echo "$DIFF" | grep -E '^[+-].*versionCode\s+[0-9]+' >/dev/null; then
+              VERSION_CHANGED=true
+            fi
+            if echo "$DIFF" | grep -E '^[+-].*versionName\s+"[^"]+"' >/dev/null; then
+              VERSION_CHANGED=true
+            fi
+          fi
+          if [ "$VERSION_CHANGED" = "false" ]; then
+            echo "should_build=false" >> "$GITHUB_OUTPUT"
             exit 0
           fi
-          DIFF="$(git diff "$BEFORE_SHA" "$AFTER_SHA" -- mobile/package.json mobile/android/app/build.gradle || true)"
-          if echo "$DIFF" | grep -E '^[+-].*"version"\s*:' >/dev/null; then
-            echo "should_build=true" >> "$GITHUB_OUTPUT"
+          HTTP_STATUS="$(curl -s -o /tmp/release_check.json -w "%{http_code}" \
+            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+            -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/${{ github.repository }}/releases/tags/$RELEASE_TAG")"
+          if [ "$HTTP_STATUS" = "200" ]; then
+            echo "should_build=false" >> "$GITHUB_OUTPUT"
             exit 0
           fi
-          if echo "$DIFF" | grep -E '^[+-].*versionCode\s+[0-9]+' >/dev/null; then
-            echo "should_build=true" >> "$GITHUB_OUTPUT"
-            exit 0
-          fi
-          if echo "$DIFF" | grep -E '^[+-].*versionName\s+"[^"]+"' >/dev/null; then
-            echo "should_build=true" >> "$GITHUB_OUTPUT"
-            exit 0
-          fi
-          echo "should_build=false" >> "$GITHUB_OUTPUT"
+          echo "should_build=true" >> "$GITHUB_OUTPUT"
 
   build-apk:
     needs: detect-version-change
     if: needs.detect-version-change.outputs.should_build == 'true'
     runs-on: ubuntu-latest
-    outputs:
-      release_tag: ${{ steps.meta.outputs.release_tag }}
     defaults:
       run:
         working-directory: mobile
@@ -68,11 +81,6 @@ jobs:
           java-version: "17"
       - name: Install dependencies
         run: npm ci
-      - id: meta
-        name: Set release metadata
-        run: |
-          VERSION="$(node -p "require('./package.json').version")"
-          echo "release_tag=v$VERSION" >> "$GITHUB_OUTPUT"
       - name: Build dev debug APK
         run: cd android && ./gradlew assembleDevDebug
       - name: Build prod release APK
@@ -101,11 +109,11 @@ jobs:
         with:
           name: chesszug-prod-release-apk
           path: artifacts
-      - name: Create or update release
+      - name: Create release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ needs.build-apk.outputs.release_tag }}
-          name: ${{ needs.build-apk.outputs.release_tag }}
+          tag_name: ${{ needs.detect-version-change.outputs.release_tag }}
+          name: ${{ needs.detect-version-change.outputs.release_tag }}
           generate_release_notes: true
           files: |
             artifacts/app-dev-debug.apk
