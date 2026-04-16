@@ -97,26 +97,20 @@ jobs:
           java-version: "17"
       - name: Install dependencies
         run: npm ci
-      - name: Build prod release APKs (arm64, x86_64)
+      - name: Build prod release APK (arm64)
         run: cd android && ./gradlew assembleProdRelease
-      - name: Stage release APKs with public names
+      - name: Stage release APK with public name
         run: |
           mkdir -p "$GITHUB_WORKSPACE/release-apks"
           SRC="$GITHUB_WORKSPACE/mobile/android/app/build/outputs/apk/prod/release"
           ls -la "$SRC"
           ARM64_APK="$(find "$SRC" -maxdepth 1 -name '*.apk' | grep 'arm64-v8a' | head -n 1)"
-          X86_64_APK="$(find "$SRC" -maxdepth 1 -name '*.apk' | grep 'x86_64' | head -n 1)"
           if [ -z "$ARM64_APK" ] || [ ! -f "$ARM64_APK" ]; then
             echo "No arm64-v8a APK found under $SRC"
             exit 1
           fi
-          if [ -z "$X86_64_APK" ] || [ ! -f "$X86_64_APK" ]; then
-            echo "No x86_64 APK found under $SRC"
-            exit 1
-          fi
           cp "$ARM64_APK" "$GITHUB_WORKSPACE/release-apks/ChessZug-arm64.apk"
-          cp "$X86_64_APK" "$GITHUB_WORKSPACE/release-apks/ChessZug-x86_64.apk"
-      - name: Upload prod release APKs
+      - name: Upload prod release APK
         uses: actions/upload-artifact@v4
         with:
           name: chesszug-prod-release-apks
@@ -139,4 +133,3 @@ jobs:
           generate_release_notes: true
           files: |
             artifacts/ChessZug-arm64.apk
-            artifacts/ChessZug-x86_64.apk
