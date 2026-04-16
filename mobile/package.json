@@ -1,9 +1,14 @@
 {
   "name": "ChessZug",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "private": true,
   "scripts": {
     "android": "react-native run-android",
+    "android:dev": "react-native run-android --mode devDebug",
+    "android:prod": "react-native run-android --mode prodDebug",
+    "android:prod:release": "react-native run-android --mode prodRelease",
+    "build:android:dev:debug": "cd android && ./gradlew assembleDevDebug",
+    "build:android:prod:release": "cd android && ./gradlew assembleProdRelease",
     "ios": "react-native run-ios",
     "lint": "eslint .",
     "start": "react-native start",

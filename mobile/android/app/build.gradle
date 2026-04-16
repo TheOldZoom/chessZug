@@ -51,6 +51,7 @@ react {
     // hermesFlags = ["-O", "-output-source-map"]
 
     /* Autolinking */
+    debuggableVariants = ["devDebug", "prodDebug"]
     autolinkLibrariesWithApp()
 }
 
@@ -84,6 +85,19 @@ android {
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
         versionName "1.0"
+    }
+    flavorDimensions "env"
+    productFlavors {
+        dev {
+            dimension "env"
+            applicationIdSuffix ".dev"
+            versionNameSuffix "-dev"
+            resValue "string", "app_name", "chessZug dev"
+        }
+        prod {
+            dimension "env"
+            resValue "string", "app_name", "ChessZug"
+        }
     }
     signingConfigs {
         debug {
