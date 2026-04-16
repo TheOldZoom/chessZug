@@ -15,7 +15,7 @@ DEV_DEBUG_APK_NAME=ChessZug-dev-debug.apk
 PROD_DEBUG_APK_NAME=ChessZug-prod-debug.apk
 PROD_RELEASE_ARM64_NAME=ChessZug-arm64.apk
 
-.PHONY: help install start android android-dev android-prod run build-debug build-release build-dev-debug build-prod-debug build-prod-release clean logs devices doctor install-apk install-dev-apk install-prod-debug-apk dist-clean
+.PHONY: help install start android android-dev android-prod run build-debug build-release build-dev-debug build-prod-debug build-prod-release fetch-stockfish clean logs devices doctor install-apk install-dev-apk install-prod-debug-apk dist-clean
 
 # ---------------- HELP ----------------
 
@@ -34,6 +34,7 @@ help:
 	@echo "  make install-apk    - build and install dev debug APK (com.chesszug.dev)"
 	@echo "  make install-dev-apk - adb install dev debug APK from dist/ (run build-dev-debug first)"
 	@echo "  make install-prod-debug-apk - adb install prod debug APK from dist/"
+	@echo "  make fetch-stockfish - force re-download Stockfish jni binary"
 	@echo "  make clean          - clean android build"
 	@echo "  make dist-clean     - remove dist/ folder"
 	@echo ""
@@ -59,6 +60,11 @@ android-prod:
 	npx react-native run-android --mode prodDebug --appId $(PROD_APP_ID)
 
 run: android
+
+# ---------------- STOCKFISH ----------------
+
+fetch-stockfish:
+	cd $(APP_DIR) && ./gradlew :app:fetchStockfish -PstockfishForce
 
 # ---------------- BUILD ----------------
 

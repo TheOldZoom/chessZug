@@ -145,13 +145,50 @@ dependencies {
     }
 }
 
-def stockfishAsset = file("${projectDir}/src/main/assets/stockfish/arm64-v8a/stockfish")
+def stockfishJniOut = file("${projectDir}/src/main/jniLibs/arm64-v8a/libstockfish.so")
+def stockfishTarUrl = (
+    findProperty("stockfishAndroidTarUrl")
+        ?: System.getenv("STOCKFISH_ANDROID_TAR_URL")
+        ?: "https://github.com/official-stockfish/Stockfish/releases/download/sf_18/stockfish-android-armv8.tar"
+).toString()
 
-tasks.register("syncStockfishJniLib", Copy) {
-    onlyIf { stockfishAsset.exists() }
-    from stockfishAsset
-    into "${projectDir}/src/main/jniLibs/arm64-v8a"
-    rename { _ -> "libstockfish.so" }
+tasks.register("fetchStockfish") {
+    group = "build"
+    description = "Download Stockfish Android armv8 into jniLibs (ignored by git)."
+    def tarFile = layout.buildDirectory.file("stockfish-tmp/stockfish-android-armv8.tar").get().asFile
+    def extractRoot = layout.buildDirectory.dir("stockfish-tmp/extract").get().asFile
+    doLast {
+        if (stockfishJniOut.exists() && !project.hasProperty("stockfishForce")) {
+            return
+        }
+        if (project.hasProperty("stockfishForce") && stockfishJniOut.exists()) {
+            stockfishJniOut.delete()
+        }
+        if (stockfishJniOut.exists()) {
+            return
+        }
+        tarFile.parentFile.mkdirs()
+        extractRoot.mkdirs()
+        def url = java.net.URI.create(stockfishTarUrl).toURL()
+        url.openStream().withCloseable { ins ->
+            tarFile.withOutputStream { outs ->
+                ins.transferTo(outs)
+            }
+        }
+        project.exec {
+            workingDir extractRoot
+            commandLine "tar", "xf", tarFile.absolutePath, "stockfish/stockfish-android-armv8"
+        }
+        stockfishJniOut.parentFile.mkdirs()
+        def extracted = new File(extractRoot, "stockfish/stockfish-android-armv8")
+        java.nio.file.Files.copy(
+            extracted.toPath(),
+            stockfishJniOut.toPath(),
+            java.nio.file.StandardCopyOption.REPLACE_EXISTING,
+        )
+        stockfishJniOut.setExecutable(true, false)
+        project.delete(tarFile.parentFile)
+    }
 }
 
-tasks.named("preBuild").configure { dependsOn(tasks.named("syncStockfishJniLib")) }
+tasks.named("preBuild").configure { dependsOn(tasks.named("fetchStockfish")) }
