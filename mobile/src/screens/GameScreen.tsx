@@ -2,7 +2,13 @@ import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useMemo, useState } from 'react';
 import { Square } from 'chess.js';
-import { useWindowDimensions, View, Text, Pressable } from 'react-native';
+import {
+  useWindowDimensions,
+  View,
+  Text,
+  Pressable,
+  ScrollView,
+} from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Chessboard } from '../components/Chessboard';
 import { GameController } from '../game/GameController';
@@ -21,14 +27,26 @@ const preferenceLabel: Record<ThemePreference, string> = {
 
 type GameNav = NativeStackNavigationProp<RootStackParamList, 'Game'>;
 
+function formatPGNLines(sans: string[]): string[] {
+  const lines: string[] = [];
+  for (let i = 0; i < sans.length; i += 2) {
+    const n = Math.floor(i / 2) + 1;
+    const white = sans[i];
+    const black = sans[i + 1];
+    lines.push(black ? `${n}. ${white} ${black}` : `${n}. ${white}`);
+  }
+  return lines;
+}
+
 export function GameScreen() {
   const navigation = useNavigation<GameNav>();
   const theme = useThemeColors();
   const { preference, cyclePreference } = useThemeSettings();
   const controller = useMemo(() => new GameController(), []);
   const [fen, setFen] = useState(controller.getFen());
-
   const [turn, setTurn] = useState(controller.getTurn());
+  const [historyLines, setHistoryLines] = useState<string[]>([]);
+
   const turnText = useMemo(() => (turn === 'w' ? 'White' : 'Black'), [turn]);
 
   const { width, height } = useWindowDimensions();
@@ -40,14 +58,24 @@ export function GameScreen() {
     height - insets.top - insets.bottom - pad * 2 - headerSpace,
   );
 
+  const syncFromController = () => {
+    setFen(controller.getFen());
+    setTurn(controller.getTurn());
+    setHistoryLines(formatPGNLines(controller.getHistory()));
+  };
+
   const onMove = (from: Square, to: Square): boolean => {
     const ok = controller.move(from, to);
     if (!ok) {
       return false;
     }
-    setFen(controller.getFen());
-    setTurn(controller.getTurn());
+    syncFromController();
     return true;
+  };
+
+  const onReset = () => {
+    controller.reset();
+    syncFromController();
   };
 
   return (
@@ -77,6 +105,27 @@ export function GameScreen() {
           {turnText}
         </Text>
         <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
+          <Pressable
+            onPress={onReset}
+            style={{
+              paddingVertical: 8,
+              paddingHorizontal: 12,
+              borderRadius: theme.radiusMd,
+              backgroundColor: theme.secondary,
+              borderWidth: 1,
+              borderColor: theme.border,
+            }}
+          >
+            <Text
+              style={{
+                fontSize: 15,
+                fontWeight: '600',
+                color: theme.secondaryText,
+              }}
+            >
+              Reset
+            </Text>
+          </Pressable>
           <Pressable
             onPress={() => navigation.navigate('AiTest')}
             style={{
@@ -129,6 +178,29 @@ export function GameScreen() {
         }}
       >
         <Chessboard size={size} onMove={onMove} fen={fen} />
+      </View>
+      <View
+        style={{
+          paddingHorizontal: insets.left + pad,
+          paddingRight: insets.right + pad,
+          paddingBottom: insets.bottom + 8,
+          maxHeight: 140,
+        }}
+      >
+        <ScrollView>
+          {historyLines.map((line, i) => (
+            <Text
+              key={`${i}-${line}`}
+              style={{
+                fontSize: 14,
+                color: theme.screenText,
+                marginBottom: 4,
+              }}
+            >
+              {line}
+            </Text>
+          ))}
+        </ScrollView>
       </View>
     </View>
   );

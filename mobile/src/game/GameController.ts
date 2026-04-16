@@ -11,6 +11,22 @@ export class GameController {
     return this.game.fen();
   }
 
+  getHistory(): string[] {
+    return this.game.history();
+  }
+
+  getTurn(): string {
+    return this.game.turn();
+  }
+
+  isGameOver(): boolean {
+    return this.game.isGameOver();
+  }
+
+  reset(): void {
+    this.game = new Chess();
+  }
+
   move(
     from: Square,
     to: Square,
@@ -25,13 +41,6 @@ export class GameController {
     } catch {
       return false;
     }
-  }
-  getTurn(): string {
-    return this.game.turn();
-  }
-
-  isGameOver(): boolean {
-    return this.game.isGameOver();
   }
 
   moveFromUci(uci: string): boolean {
