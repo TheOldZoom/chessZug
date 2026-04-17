@@ -2,6 +2,7 @@ import { useMemo, type ReactNode } from 'react';
 import {
   CommonActions,
   DarkTheme,
+  DefaultTheme,
   NavigationContainer,
 } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -16,7 +17,12 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { AiTestScreen } from '../screens/AiTestScreen';
 import { GameScreen } from '../screens/GameScreen';
 import { HomeScreen } from '../screens/HomeScreen';
-import { ThemeProvider } from '../theme/ThemeProvider';
+import { ThemePaletteScreen } from '../screens/ThemePaletteScreen';
+import {
+  createAppMaterialLightTheme,
+  createAppMaterialTheme,
+} from '../theme/materialTheme';
+import { ThemeProvider, useThemeMode } from '../theme/ThemeProvider';
 import type { RootStackParamList } from '../types/navigation';
 
 const Tabs = createBottomTabNavigator<RootStackParamList>();
@@ -35,7 +41,10 @@ function App() {
 }
 
 function ThemedStatusBar() {
-  return <StatusBar barStyle="light-content" />;
+  const theme = useTheme();
+  return (
+    <StatusBar barStyle={theme.dark ? 'light-content' : 'dark-content'} />
+  );
 }
 
 function ThemedAppContainer({ children }: { children: ReactNode }) {
@@ -52,19 +61,33 @@ function ThemedAppContainer({ children }: { children: ReactNode }) {
   );
 }
 
+const materialDarkNav = createAppMaterialTheme();
+const materialLightNav = createAppMaterialLightTheme();
+const { LightTheme: adaptedNavLight, DarkTheme: adaptedNavDark } =
+  adaptNavigationTheme({
+    reactNavigationLight: DefaultTheme,
+    reactNavigationDark: DarkTheme,
+    materialLight: materialLightNav,
+    materialDark: materialDarkNav,
+  });
+
 function ThemedNavigation() {
   const paperTheme = useTheme();
-  const { DarkTheme: adaptedNav } = adaptNavigationTheme({
-    reactNavigationDark: DarkTheme,
-    materialDark: paperTheme,
-  });
+  const { mode } = useThemeMode();
   const navigationTheme = useMemo(
-    () => ({
-      ...DarkTheme,
-      ...adaptedNav,
-      fonts: DarkTheme.fonts,
-    }),
-    [adaptedNav],
+    () =>
+      mode === 'dark'
+        ? {
+            ...DarkTheme,
+            ...adaptedNavDark,
+            fonts: DarkTheme.fonts,
+          }
+        : {
+            ...DefaultTheme,
+            ...adaptedNavLight,
+            fonts: DefaultTheme.fonts,
+          },
+    [mode],
   );
 
   return (
@@ -139,6 +162,16 @@ function ThemedNavigation() {
             title: 'AI',
             tabBarIcon: ({ color }) => (
               <MaterialDesignIcons name="robot" color={color} size={24} />
+            ),
+          }}
+        />
+        <Tabs.Screen
+          name="ThemePalette"
+          component={ThemePaletteScreen}
+          options={{
+            title: 'Theme',
+            tabBarIcon: ({ color }) => (
+              <MaterialDesignIcons name="palette" color={color} size={24} />
             ),
           }}
         />

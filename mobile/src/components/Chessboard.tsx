@@ -2,7 +2,7 @@ import { Chess, Color, Square } from 'chess.js';
 import { useMemo, useState } from 'react';
 import { Image, StyleSheet, Text, View } from 'react-native';
 import { TouchableRipple } from 'react-native-paper';
-import { chessBoardPalette } from '../theme/materialTheme';
+import { Board } from '../theme/materialTheme';
 
 type Props = {
   fen: string;
@@ -60,47 +60,54 @@ export function Chessboard({ size = 320, fen, onMove, humanColor }: Props) {
   };
 
   return (
-    <View style={[styles.board, { width: size, height: size }]}>
+    <View
+      style={[
+        styles.board,
+        {
+          borderWidth: 5,
+          borderColor: Board.edge,
+        },
+      ]}
+    >
       {ranks.map((rank, r) => (
         <View key={rank} style={styles.row}>
-          {files.map((file, c) => {
+          {files.map((file, col) => {
             const square = `${file}${rank}` as Square;
             const piece = game.get(square);
             const key = piece
               ? (`${piece.color}_${piece.type}` as keyof typeof pieceImages)
               : null;
-            const isLight = (r + c) % 2 === 0;
-            const borderColor =
-              selected === square
-                ? chessBoardPalette.selection
-                : isLight
-                  ? chessBoardPalette.squareA
-                  : chessBoardPalette.squareB;
+            const isLight = (r + col) % 2 === 0;
+            const bg = isLight ? Board.lightSquare : Board.darkSquare;
+            const selectedHere = selected === square;
+            const borderColor = selectedHere ? Board.selection : 'transparent';
+            const borderWidth = selectedHere ? 3 : 0;
+            const labelColor = isLight ? Board.coordOnLight : Board.coordOnDark;
             return (
               <TouchableRipple
                 key={square}
                 onPress={() => onPressSquare(square)}
                 borderless={false}
+                rippleColor={Board.ripple}
                 style={[
                   styles.cell,
-                  { width: cell, height: cell, borderWidth: 2, borderColor },
                   {
-                    backgroundColor: isLight
-                      ? chessBoardPalette.squareA
-                      : chessBoardPalette.squareB,
+                    width: cell,
+                    height: cell,
+                    borderWidth,
+                    borderColor,
+                    backgroundColor: bg,
                   },
                 ]}
               >
                 <View style={styles.cellInner}>
-                  {c === 0 ? (
+                  {col === 0 ? (
                     <Text
                       style={[
                         styles.rankCoord,
                         {
                           fontSize: label,
-                          color: isLight
-                            ? chessBoardPalette.squareB
-                            : chessBoardPalette.squareA,
+                          color: labelColor,
                         },
                       ]}
                     >
@@ -113,9 +120,7 @@ export function Chessboard({ size = 320, fen, onMove, humanColor }: Props) {
                         styles.fileCoord,
                         {
                           fontSize: label,
-                          color: isLight
-                            ? chessBoardPalette.squareB
-                            : chessBoardPalette.squareA,
+                          color: labelColor,
                         },
                       ]}
                     >
