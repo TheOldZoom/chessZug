@@ -1,35 +1,26 @@
-import { useNavigation } from '@react-navigation/native';
-import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Square } from 'chess.js';
 import {
   ActivityIndicator,
   Platform,
-  Pressable,
-  Text,
   useWindowDimensions,
   View,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import {
+  Button,
+  Card,
+  HelperText,
+  Text,
+  useTheme,
+} from 'react-native-paper';
 import { Chessboard } from '../components/Chessboard';
+import { Screen, SCREEN_EDGE_PADDING } from '../components/Screen';
 import { GameController } from '../game/GameController';
 import { openStockfishEngine, type Engine } from '../engine/EngineManager';
-import { useThemeColors, useThemeSettings } from '../theme/ThemeProvider';
-import type { RootStackParamList } from '../navigation/types';
-import type { ThemePreference } from '../theme/theme';
-
-const preferenceLabel: Record<ThemePreference, string> = {
-  system: 'Auto',
-  light: 'Light',
-  dark: 'Dark',
-};
-
-type AiTestNav = NativeStackNavigationProp<RootStackParamList, 'AiTest'>;
 
 export function AiTestScreen() {
-  const navigation = useNavigation<AiTestNav>();
-  const theme = useThemeColors();
-  const { preference, cyclePreference } = useThemeSettings();
+  const theme = useTheme();
   const [controller, setController] = useState(() => new GameController());
   const [fen, setFen] = useState(() => controller.getFen());
   const [thinking, setThinking] = useState(false);
@@ -119,11 +110,15 @@ export function AiTestScreen() {
 
   const { width, height } = useWindowDimensions();
   const insets = useSafeAreaInsets();
-  const pad = 16;
-  const headerSpace = 120;
+  const belowBarReserve = 112;
   const size = Math.min(
-    width - insets.left - insets.right - pad * 2,
-    height - insets.top - insets.bottom - pad * 2 - headerSpace,
+    width - insets.left - insets.right - SCREEN_EDGE_PADDING * 2,
+    height -
+      insets.top -
+      insets.bottom -
+      SCREEN_EDGE_PADDING * 2 -
+      56 -
+      belowBarReserve,
   );
 
   const status =
@@ -131,134 +126,41 @@ export function AiTestScreen() {
     (!engineReady && Platform.OS === 'android' ? 'Starting engine…' : null);
 
   return (
-    <View
-      style={{
-        flex: 1,
-        backgroundColor: theme.screenBackground,
-      }}
-    >
-      <View
-        style={{
-          paddingTop: insets.top + 8,
-          paddingLeft: insets.left + pad,
-          paddingRight: insets.right + pad,
-          gap: 8,
-        }}
-      >
-        <View
-          style={{
-            flexDirection: 'row',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            flexWrap: 'wrap',
-            gap: 8,
-          }}
-        >
+    <Screen>
+      <Card mode="elevated" style={{ marginBottom: 8 }}>
+        <Card.Title title="Stockfish" subtitle="White vs Stockfish" />
+        <Card.Content>
           <View
             style={{
               flexDirection: 'row',
-              alignItems: 'center',
+              flexWrap: 'wrap',
               gap: 8,
-              flexShrink: 1,
-              flex: 1,
+              alignItems: 'center',
             }}
           >
-            <Pressable
-              onPress={() => navigation.goBack()}
-              style={{
-                paddingVertical: 8,
-                paddingHorizontal: 12,
-                borderRadius: theme.radiusMd,
-                backgroundColor: theme.secondary,
-                borderWidth: 1,
-                borderColor: theme.border,
-              }}
-            >
-              <Text
+            <Button mode="contained-tonal" onPress={reset} disabled={thinking}>
+              New game
+            </Button>
+            {thinking ? (
+              <View
                 style={{
-                  fontSize: 14,
-                  fontWeight: '600',
-                  color: theme.secondaryText,
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  gap: 8,
                 }}
               >
-                Back
-              </Text>
-            </Pressable>
-            <Text
-              style={{
-                fontSize: 18,
-                fontWeight: 'bold',
-                color: theme.screenText,
-                flexShrink: 1,
-              }}
-            >
-              White vs Stockfish
-            </Text>
+                <ActivityIndicator animating color={theme.colors.primary} />
+                <Text variant="bodyMedium">Stockfish…</Text>
+              </View>
+            ) : null}
           </View>
-          <Pressable
-            onPress={cyclePreference}
-            style={{
-              paddingVertical: 8,
-              paddingHorizontal: 12,
-              borderRadius: theme.radiusMd,
-              backgroundColor: theme.secondary,
-              borderWidth: 1,
-              borderColor: theme.border,
-            }}
-          >
-            <Text
-              style={{
-                fontSize: 14,
-                fontWeight: '600',
-                color: theme.secondaryText,
-              }}
-            >
-              Theme: {preferenceLabel[preference]}
-            </Text>
-          </Pressable>
-        </View>
-        <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
-          <Pressable
-            onPress={reset}
-            disabled={thinking}
-            style={{
-              paddingVertical: 8,
-              paddingHorizontal: 14,
-              borderRadius: theme.radiusMd,
-              backgroundColor: theme.secondary,
-              borderWidth: 1,
-              borderColor: theme.border,
-              opacity: thinking ? 0.5 : 1,
-            }}
-          >
-            <Text style={{ fontWeight: '600', color: theme.secondaryText }}>
-              New game
-            </Text>
-          </Pressable>
-          {thinking ? (
-            <View
-              style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                gap: 8,
-              }}
-            >
-              <ActivityIndicator color={theme.screenText} />
-              <Text style={{ color: theme.screenText }}>Stockfish…</Text>
-            </View>
+          {status ? (
+            <HelperText type={error ? 'error' : 'info'} visible style={{ marginTop: 8 }}>
+              {status}
+            </HelperText>
           ) : null}
-        </View>
-        {status ? (
-          <Text
-            style={{
-              color: error ? theme.destructive : theme.screenText,
-              fontSize: 14,
-            }}
-          >
-            {status}
-          </Text>
-        ) : null}
-      </View>
+        </Card.Content>
+      </Card>
       <View
         style={{
           flex: 1,
@@ -268,6 +170,6 @@ export function AiTestScreen() {
       >
         <Chessboard size={size} fen={fen} onMove={onMove} humanColor="w" />
       </View>
-    </View>
+    </Screen>
   );
 }

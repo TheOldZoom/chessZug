@@ -1,8 +1,8 @@
 import { Chess, Color, Square } from 'chess.js';
 import { useMemo, useState } from 'react';
-import { Image, Pressable, StyleSheet, Text } from 'react-native';
-import { View } from 'react-native';
-import { useThemeColors } from '../theme/ThemeProvider';
+import { Image, StyleSheet, Text, View } from 'react-native';
+import { TouchableRipple } from 'react-native-paper';
+import { chessBoardPalette } from '../theme/materialTheme';
 
 type Props = {
   fen: string;
@@ -30,7 +30,6 @@ const files = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'] as const;
 const ranks = ['8', '7', '6', '5', '4', '3', '2', '1'] as const;
 
 export function Chessboard({ size = 320, fen, onMove, humanColor }: Props) {
-  const theme = useThemeColors();
   const game = useMemo(() => new Chess(fen), [fen]);
   const [selected, setSelected] = useState<Square | null>(null);
   const cell = size / 8;
@@ -73,62 +72,65 @@ export function Chessboard({ size = 320, fen, onMove, humanColor }: Props) {
             const isLight = (r + c) % 2 === 0;
             const borderColor =
               selected === square
-                ? theme.boardSelection
+                ? chessBoardPalette.selection
                 : isLight
-                ? theme.boardSquareA
-                : theme.boardSquareB;
+                  ? chessBoardPalette.squareA
+                  : chessBoardPalette.squareB;
             return (
-              <Pressable
+              <TouchableRipple
                 key={square}
                 onPress={() => onPressSquare(square)}
+                borderless={false}
                 style={[
                   styles.cell,
                   { width: cell, height: cell, borderWidth: 2, borderColor },
                   {
                     backgroundColor: isLight
-                      ? theme.boardSquareA
-                      : theme.boardSquareB,
+                      ? chessBoardPalette.squareA
+                      : chessBoardPalette.squareB,
                   },
                 ]}
               >
-                {c === 0 ? (
-                  <Text
-                    style={[
-                      styles.rankCoord,
-                      {
-                        fontSize: label,
-                        color: isLight
-                          ? theme.boardSquareB
-                          : theme.boardSquareA,
-                      },
-                    ]}
-                  >
-                    {rank}
-                  </Text>
-                ) : null}
-                {r === 7 ? (
-                  <Text
-                    style={[
-                      styles.fileCoord,
-                      {
-                        fontSize: label,
-                        color: isLight
-                          ? theme.boardSquareB
-                          : theme.boardSquareA,
-                      },
-                    ]}
-                  >
-                    {file}
-                  </Text>
-                ) : null}
-                {key ? (
-                  <Image
-                    source={pieceImages[key]}
-                    style={{ width: cell * 0.95, height: cell * 0.95 }}
-                    resizeMode="contain"
-                  />
-                ) : null}
-              </Pressable>
+                <View style={styles.cellInner}>
+                  {c === 0 ? (
+                    <Text
+                      style={[
+                        styles.rankCoord,
+                        {
+                          fontSize: label,
+                          color: isLight
+                            ? chessBoardPalette.squareB
+                            : chessBoardPalette.squareA,
+                        },
+                      ]}
+                    >
+                      {rank}
+                    </Text>
+                  ) : null}
+                  {r === 7 ? (
+                    <Text
+                      style={[
+                        styles.fileCoord,
+                        {
+                          fontSize: label,
+                          color: isLight
+                            ? chessBoardPalette.squareB
+                            : chessBoardPalette.squareA,
+                        },
+                      ]}
+                    >
+                      {file}
+                    </Text>
+                  ) : null}
+                  {key ? (
+                    <Image
+                      source={pieceImages[key]}
+                      style={{ width: cell * 0.95, height: cell * 0.95 }}
+                      resizeMode="contain"
+                    />
+                  ) : null}
+                </View>
+              </TouchableRipple>
             );
           })}
         </View>
@@ -140,6 +142,13 @@ const styles = StyleSheet.create({
   board: {},
   row: { flexDirection: 'row' },
   cell: { alignItems: 'center', justifyContent: 'center' },
+  cellInner: {
+    flex: 1,
+    width: '100%',
+    height: '100%',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   rankCoord: { position: 'absolute', top: 2, left: 3, fontWeight: '700' },
   fileCoord: { position: 'absolute', bottom: 2, right: 3, fontWeight: '700' },
 });

@@ -30,7 +30,7 @@ android/.gradle/
 android/app/build/
 android/build/
 android/local.properties
-android/.cxx/
+android/app/.cxx/
 *.keystore
 !debug.keystore
 
@@ -67,3 +67,5 @@ coverage/
 **/*.exe
 **/*.out
 **/*.log
+
+package-lock.json

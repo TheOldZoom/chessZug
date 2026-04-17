@@ -1,9 +1,0 @@
-if(NOT TARGET fbjni::fbjni)
-add_library(fbjni::fbjni SHARED IMPORTED)
-set_target_properties(fbjni::fbjni PROPERTIES
-    IMPORTED_LOCATION "/home/zoom/.gradle/caches/9.3.1/transforms/3c01aea05d2737e987399f1309ae090e/transformed/fbjni-0.7.0/prefab/modules/fbjni/libs/android.armeabi-v7a/libfbjni.so"
-    INTERFACE_INCLUDE_DIRECTORIES "/home/zoom/.gradle/caches/9.3.1/transforms/3c01aea05d2737e987399f1309ae090e/transformed/fbjni-0.7.0/prefab/modules/fbjni/include"
-    INTERFACE_LINK_LIBRARIES ""
-)
-endif()
-

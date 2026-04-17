@@ -1,31 +1,11 @@
-import { useNavigation } from '@react-navigation/native';
-import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useMemo, useState } from 'react';
 import { Square } from 'chess.js';
-import {
-  useWindowDimensions,
-  View,
-  Text,
-  Pressable,
-  ScrollView,
-} from 'react-native';
+import { useWindowDimensions, View, ScrollView } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Divider, Text, useTheme } from 'react-native-paper';
 import { Chessboard } from '../components/Chessboard';
+import { Screen, SCREEN_EDGE_PADDING } from '../components/Screen';
 import { GameController } from '../game/GameController';
-import {
-  useThemeColors,
-  useThemeSettings,
-} from '../theme/ThemeProvider';
-import type { RootStackParamList } from '../navigation/types';
-import type { ThemePreference } from '../theme/theme';
-
-const preferenceLabel: Record<ThemePreference, string> = {
-  system: 'Auto',
-  light: 'Light',
-  dark: 'Dark',
-};
-
-type GameNav = NativeStackNavigationProp<RootStackParamList, 'Game'>;
 
 function formatPGNLines(sans: string[]): string[] {
   const lines: string[] = [];
@@ -39,23 +19,26 @@ function formatPGNLines(sans: string[]): string[] {
 }
 
 export function GameScreen() {
-  const navigation = useNavigation<GameNav>();
-  const theme = useThemeColors();
-  const { preference, cyclePreference } = useThemeSettings();
+  const theme = useTheme();
   const controller = useMemo(() => new GameController(), []);
   const [fen, setFen] = useState(controller.getFen());
   const [turn, setTurn] = useState(controller.getTurn());
   const [historyLines, setHistoryLines] = useState<string[]>([]);
 
   const turnText = useMemo(() => (turn === 'w' ? 'White' : 'Black'), [turn]);
+  const title = useMemo(() => `${turnText} to move`, [turnText]);
 
   const { width, height } = useWindowDimensions();
   const insets = useSafeAreaInsets();
-  const pad = 16;
-  const headerSpace = 48;
+  const footerReserve = 156;
   const size = Math.min(
-    width - insets.left - insets.right - pad * 2,
-    height - insets.top - insets.bottom - pad * 2 - headerSpace,
+    width - insets.left - insets.right - SCREEN_EDGE_PADDING * 2,
+    height -
+      insets.top -
+      insets.bottom -
+      SCREEN_EDGE_PADDING * 2 -
+      56 -
+      footerReserve,
   );
 
   const syncFromController = () => {
@@ -73,103 +56,8 @@ export function GameScreen() {
     return true;
   };
 
-  const onReset = () => {
-    controller.reset();
-    syncFromController();
-  };
-
   return (
-    <View
-      style={{
-        flex: 1,
-        backgroundColor: theme.screenBackground,
-      }}
-    >
-      <View
-        style={{
-          paddingTop: insets.top + 8,
-          paddingLeft: insets.left + pad,
-          paddingRight: insets.right + pad,
-          flexDirection: 'row',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-        }}
-      >
-        <Text
-          style={{
-            fontSize: 20,
-            fontWeight: 'bold',
-            color: theme.screenText,
-          }}
-        >
-          {turnText}
-        </Text>
-        <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
-          <Pressable
-            onPress={onReset}
-            style={{
-              paddingVertical: 8,
-              paddingHorizontal: 12,
-              borderRadius: theme.radiusMd,
-              backgroundColor: theme.secondary,
-              borderWidth: 1,
-              borderColor: theme.border,
-            }}
-          >
-            <Text
-              style={{
-                fontSize: 15,
-                fontWeight: '600',
-                color: theme.secondaryText,
-              }}
-            >
-              Reset
-            </Text>
-          </Pressable>
-          <Pressable
-            onPress={() => navigation.navigate('AiTest')}
-            style={{
-              paddingVertical: 8,
-              paddingHorizontal: 12,
-              borderRadius: theme.radiusMd,
-              backgroundColor: theme.secondary,
-              borderWidth: 1,
-              borderColor: theme.border,
-            }}
-          >
-            <Text
-              style={{
-                fontSize: 15,
-                fontWeight: '600',
-                color: theme.secondaryText,
-              }}
-            >
-              AI test
-            </Text>
-          </Pressable>
-          <Pressable
-            onPress={cyclePreference}
-            style={{
-              paddingVertical: 8,
-              paddingHorizontal: 12,
-              borderRadius: theme.radiusMd,
-              backgroundColor: theme.secondary,
-              borderWidth: 1,
-              borderColor: theme.border,
-            }}
-          >
-            <Text
-              style={{
-                fontSize: 15,
-                fontWeight: '600',
-                color: theme.secondaryText,
-              }}
-            >
-              Theme: {preferenceLabel[preference]}
-            </Text>
-          </Pressable>
-        </View>
-      </View>
+    <Screen>
       <View
         style={{
           flex: 1,
@@ -181,19 +69,23 @@ export function GameScreen() {
       </View>
       <View
         style={{
-          paddingHorizontal: insets.left + pad,
-          paddingRight: insets.right + pad,
-          paddingBottom: insets.bottom + 8,
+          paddingLeft: insets.left,
+          paddingRight: insets.right,
+          paddingBottom: insets.bottom + 16,
           maxHeight: 140,
         }}
       >
+        <Text variant="titleMedium" style={{ marginBottom: 8 }}>
+          {title}
+        </Text>
+        <Divider style={{ marginBottom: 8 }} />
         <ScrollView>
           {historyLines.map((line, i) => (
             <Text
               key={`${i}-${line}`}
+              variant="bodyMedium"
               style={{
-                fontSize: 14,
-                color: theme.screenText,
+                color: theme.colors.onSurfaceVariant,
                 marginBottom: 4,
               }}
             >
@@ -202,6 +94,6 @@ export function GameScreen() {
           ))}
         </ScrollView>
       </View>
-    </View>
+    </Screen>
   );
 }

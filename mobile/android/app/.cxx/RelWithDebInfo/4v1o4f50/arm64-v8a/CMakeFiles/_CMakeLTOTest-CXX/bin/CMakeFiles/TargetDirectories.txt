@@ -1,4 +1,0 @@
-/home/zoom/projects/chessZug/mobile/android/app/.cxx/RelWithDebInfo/4v1o4f50/arm64-v8a/CMakeFiles/_CMakeLTOTest-CXX/bin/CMakeFiles/foo.dir
-/home/zoom/projects/chessZug/mobile/android/app/.cxx/RelWithDebInfo/4v1o4f50/arm64-v8a/CMakeFiles/_CMakeLTOTest-CXX/bin/CMakeFiles/boo.dir
-/home/zoom/projects/chessZug/mobile/android/app/.cxx/RelWithDebInfo/4v1o4f50/arm64-v8a/CMakeFiles/_CMakeLTOTest-CXX/bin/CMakeFiles/edit_cache.dir
-/home/zoom/projects/chessZug/mobile/android/app/.cxx/RelWithDebInfo/4v1o4f50/arm64-v8a/CMakeFiles/_CMakeLTOTest-CXX/bin/CMakeFiles/rebuild_cache.dir
