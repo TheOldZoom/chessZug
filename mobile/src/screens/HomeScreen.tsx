@@ -1,7 +1,16 @@
+import { useNavigation } from '@react-navigation/native';
+import type { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 import { Surface, Text } from 'react-native-paper';
 import { Screen } from '../components/Screen';
+import { Fab } from '../components/Fab';
+import { Animated } from 'react-native';
+import type { RootStackParamList } from '../types/navigation';
+
+type HomeScreenNavigation = BottomTabNavigationProp<RootStackParamList, 'Home'>;
 
 export function HomeScreen() {
+  const navigation = useNavigation<HomeScreenNavigation>();
+
   return (
     <Screen>
       <Surface
@@ -14,6 +23,15 @@ export function HomeScreen() {
           Home
         </Text>
       </Surface>
+      <Fab
+        animatedValue={new Animated.Value(0)}
+        visible={true}
+        extended={true}
+        label="Play Game"
+        animateFrom="right"
+        iconMode="dynamic"
+        onPress={() => navigation.navigate('Game')}
+      />
     </Screen>
   );
 }
