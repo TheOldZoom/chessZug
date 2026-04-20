@@ -74,6 +74,27 @@ class StockfishModule(reactContext: ReactApplicationContext) :
   }
 
   @ReactMethod
+  fun setElo(elo: Int, promise: Promise) {
+    executor.execute {
+      try {
+        synchronized(ioLock) {
+          requireEngine()
+          val mapped =
+              1320 + ((elo - 100) * (3190 - 1320)) / (3000 - 100)
+          val clamped = mapped.coerceIn(1320, 3190)
+          sendRaw("setoption name UCI_LimitStrength value true\n")
+          sendRaw("setoption name UCI_Elo value $clamped\n")
+          sendRaw("isready\n")
+          readUntilLine { it == "readyok" }
+        }
+        promise.resolve(null)
+      } catch (e: Exception) {
+        promise.reject("STOCKFISH_ELO", e.message, e)
+      }
+    }
+  }
+
+  @ReactMethod
   fun setPosition(fen: String, promise: Promise) {
     executor.execute {
       try {

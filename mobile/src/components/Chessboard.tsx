@@ -1,42 +1,49 @@
-import { Chess, Color, Square } from 'chess.js';
+import { Chess, Square } from 'chess.js';
 import { useMemo, useState } from 'react';
-import { Image, StyleSheet, Text, View } from 'react-native';
-import { TouchableRipple } from 'react-native-paper';
+import { Image, ScrollView, StyleSheet, Text, View } from 'react-native';
+import {
+  Text as PaperText,
+  TouchableRipple,
+  useTheme,
+} from 'react-native-paper';
+import { PIECE_IMAGES } from '../game/pieceImages';
 import { Board } from '../theme/materialTheme';
 
-type Props = {
+export type ChessboardProps = {
   fen: string;
   size: number;
   onMove: (from: Square, to: Square) => boolean;
-  humanColor?: Color;
-};
-
-const pieceImages = {
-  w_p: require('../assets/pieces/w_pawn.png'),
-  w_n: require('../assets/pieces/w_knight.png'),
-  w_b: require('../assets/pieces/w_bishop.png'),
-  w_r: require('../assets/pieces/w_rook.png'),
-  w_q: require('../assets/pieces/w_queen.png'),
-  w_k: require('../assets/pieces/w_king.png'),
-  b_p: require('../assets/pieces/b_pawn.png'),
-  b_n: require('../assets/pieces/b_knight.png'),
-  b_b: require('../assets/pieces/b_bishop.png'),
-  b_r: require('../assets/pieces/b_rook.png'),
-  b_q: require('../assets/pieces/b_queen.png'),
-  b_k: require('../assets/pieces/b_king.png'),
+  bottomPlayerColor?: 'w' | 'b';
+  moveOnlyAs?: 'w' | 'b';
 };
 
 const files = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'] as const;
 const ranks = ['8', '7', '6', '5', '4', '3', '2', '1'] as const;
 
-export function Chessboard({ size = 320, fen, onMove, humanColor }: Props) {
+function isLightSquare(square: Square): boolean {
+  const file = square.charCodeAt(0) - 'a'.charCodeAt(0);
+  const rank = parseInt(square[1], 10);
+  return (file + rank) % 2 === 0;
+}
+
+export function Chessboard({
+  size = 320,
+  fen,
+  onMove,
+  bottomPlayerColor = 'w',
+  moveOnlyAs,
+}: ChessboardProps) {
   const game = useMemo(() => new Chess(fen), [fen]);
   const [selected, setSelected] = useState<Square | null>(null);
   const cell = size / 8;
   const label = cell * 0.28;
 
+  const displayRanks = bottomPlayerColor === 'b' ? [...ranks].reverse() : ranks;
+  const displayFiles = bottomPlayerColor === 'b' ? [...files].reverse() : files;
+  const bottomRankIndex = displayRanks.length - 1;
+
   const onPressSquare = (square: Square) => {
-    if (humanColor !== undefined && game.turn() !== humanColor) {
+    if (moveOnlyAs !== undefined && game.turn() !== moveOnlyAs) {
       setSelected(null);
       return;
     }
@@ -69,15 +76,15 @@ export function Chessboard({ size = 320, fen, onMove, humanColor }: Props) {
         },
       ]}
     >
-      {ranks.map((rank, r) => (
-        <View key={rank} style={styles.row}>
-          {files.map((file, col) => {
+      {displayRanks.map((rank, r) => (
+        <View key={`${rank}-${r}`} style={styles.row}>
+          {displayFiles.map((file, col) => {
             const square = `${file}${rank}` as Square;
             const piece = game.get(square);
             const key = piece
-              ? (`${piece.color}_${piece.type}` as keyof typeof pieceImages)
+              ? (`${piece.color}_${piece.type}` as keyof typeof PIECE_IMAGES)
               : null;
-            const isLight = (r + col) % 2 === 0;
+            const isLight = isLightSquare(square);
             const bg = isLight ? Board.lightSquare : Board.darkSquare;
             const selectedHere = selected === square;
             const borderColor = selectedHere ? Board.selection : 'transparent';
@@ -114,7 +121,7 @@ export function Chessboard({ size = 320, fen, onMove, humanColor }: Props) {
                       {rank}
                     </Text>
                   ) : null}
-                  {r === 7 ? (
+                  {r === bottomRankIndex ? (
                     <Text
                       style={[
                         styles.fileCoord,
@@ -129,7 +136,7 @@ export function Chessboard({ size = 320, fen, onMove, humanColor }: Props) {
                   ) : null}
                   {key ? (
                     <Image
-                      source={pieceImages[key]}
+                      source={PIECE_IMAGES[key]}
                       style={{ width: cell * 0.95, height: cell * 0.95 }}
                       resizeMode="contain"
                     />
@@ -143,8 +150,45 @@ export function Chessboard({ size = 320, fen, onMove, humanColor }: Props) {
     </View>
   );
 }
+
+export type GameBoardProps = ChessboardProps;
+
+export function formatPGNLines(sans: string[]): string[] {
+  const lines: string[] = [];
+  for (let i = 0; i < sans.length; i += 2) {
+    const n = Math.floor(i / 2) + 1;
+    const white = sans[i];
+    const black = sans[i + 1];
+    lines.push(black ? `${n}. ${white} ${black}` : `${n}. ${white}`);
+  }
+  return lines;
+}
+
+export function GameBoard({
+  size = 320,
+  fen,
+  onMove,
+  bottomPlayerColor,
+  moveOnlyAs,
+}: GameBoardProps) {
+  return (
+    <View>
+      <Chessboard
+        size={size}
+        fen={fen}
+        onMove={onMove}
+        bottomPlayerColor={bottomPlayerColor}
+        moveOnlyAs={moveOnlyAs}
+      />
+    </View>
+  );
+}
+
 const styles = StyleSheet.create({
   board: {},
+  historyScroll: { maxHeight: 160, marginTop: 12 },
+  historyScrollContent: { paddingBottom: 8 },
+  historyLine: { marginBottom: 4 },
   row: { flexDirection: 'row' },
   cell: { alignItems: 'center', justifyContent: 'center' },
   cellInner: {

@@ -5,11 +5,13 @@ export interface Engine {
   go(movetime: number): Promise<string>;
   stop(): Promise<void>;
   shutdown(): Promise<void>;
+  setElo(elo: number): Promise<void>;
 }
 
 type StockfishNative = {
   prepare: () => Promise<void>;
   setPosition: (fen: string) => Promise<void>;
+  setElo: (elo: number) => Promise<void>;
   goMovetime: (movetimeMs: number) => Promise<string>;
   goDepth: (depth: number) => Promise<string>;
   stop: () => Promise<void>;
@@ -26,6 +28,9 @@ export async function openStockfishEngine(): Promise<Engine> {
   }
   await native.prepare();
   return {
+    setElo: async elo => {
+      await native.setElo(elo);
+    },
     setPosition: async fen => {
       await native.setPosition(fen);
     },

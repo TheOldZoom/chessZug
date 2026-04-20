@@ -1,4 +1,4 @@
-import { Chess, Square } from 'chess.js';
+import { Chess, type Move, Square } from 'chess.js';
 
 export class GameController {
   private game: Chess;
@@ -13,6 +13,10 @@ export class GameController {
 
   getHistory(): string[] {
     return this.game.history();
+  }
+
+  getVerboseHistory(): Move[] {
+    return this.game.history({ verbose: true });
   }
 
   getTurn(): string {

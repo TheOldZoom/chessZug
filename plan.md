@@ -202,6 +202,7 @@ That’s it.
 
 ## Phase 5 — Training tools
 
+- Gambits learning
 - puzzles (fixed positions)
 - best move hints
 
