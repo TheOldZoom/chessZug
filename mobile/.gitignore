@@ -67,5 +67,3 @@ coverage/
 **/*.exe
 **/*.out
 **/*.log
-
-package-lock.json
