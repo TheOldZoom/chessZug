@@ -73,6 +73,75 @@ def enableProguardInReleaseBuilds = false
  */
 def jscFlavor = 'io.github.react-native-community:jsc-android:2026004.+'
 
+def keystoreProperties = new Properties()
+def keystorePropertiesFile = rootProject.file("keystore.properties")
+if (keystorePropertiesFile.exists()) {
+    keystorePropertiesFile.withInputStream { keystoreProperties.load(it) }
+}
+
+def releaseSigningProp = { String uploadEnv, String legacyEnv, String gradleName, String fileKey ->
+    def a = System.getenv(uploadEnv)
+    if (a != null && !a.isEmpty()) {
+        return a
+    }
+    def b = System.getenv(legacyEnv)
+    if (b != null && !b.isEmpty()) {
+        return b
+    }
+    def c = rootProject.findProperty(gradleName)
+    if (c != null) {
+        return c.toString()
+    }
+    return keystoreProperties.getProperty(fileKey)
+}
+
+def releaseStoreFile = releaseSigningProp(
+        "CHESSZUG_UPLOAD_STORE_FILE",
+        "CHESSZUG_RELEASE_STORE_FILE",
+        "CHESSZUG_UPLOAD_STORE_FILE",
+        "storeFile",
+)
+def releaseStorePassword = releaseSigningProp(
+        "CHESSZUG_UPLOAD_STORE_PASSWORD",
+        "CHESSZUG_RELEASE_STORE_PASSWORD",
+        "CHESSZUG_UPLOAD_STORE_PASSWORD",
+        "storePassword",
+)
+def releaseKeyAlias = releaseSigningProp(
+        "CHESSZUG_UPLOAD_KEY_ALIAS",
+        "CHESSZUG_RELEASE_KEY_ALIAS",
+        "CHESSZUG_UPLOAD_KEY_ALIAS",
+        "keyAlias",
+)
+def releaseKeyPassword = releaseSigningProp(
+        "CHESSZUG_UPLOAD_KEY_PASSWORD",
+        "CHESSZUG_RELEASE_KEY_PASSWORD",
+        "CHESSZUG_UPLOAD_KEY_PASSWORD",
+        "keyPassword",
+)
+
+def resolveReleaseKeystoreFile = { String path ->
+    if (path == null || path.isEmpty()) {
+        return null
+    }
+    def p = path.trim()
+    def abs = new File(p)
+    if (abs.isAbsolute()) {
+        return abs
+    }
+    if (p.startsWith("app/") || p.startsWith("app\\")) {
+        return rootProject.file(p)
+    }
+    return file(p)
+}
+
+def releaseKeystorePath = releaseStoreFile != null ? resolveReleaseKeystoreFile(releaseStoreFile) : null
+def releaseSigningConfigured = releaseKeystorePath != null &&
+        releaseKeystorePath.exists() &&
+        releaseStorePassword != null && !releaseStorePassword.isEmpty() &&
+        releaseKeyAlias != null && !releaseKeyAlias.isEmpty() &&
+        releaseKeyPassword != null && !releaseKeyPassword.isEmpty()
+
 android {
     ndkVersion rootProject.ext.ndkVersion
     buildToolsVersion rootProject.ext.buildToolsVersion
@@ -106,15 +175,21 @@ android {
             keyAlias 'androiddebugkey'
             keyPassword 'android'
         }
+        release {
+            if (releaseSigningConfigured) {
+                storeFile releaseKeystorePath
+                storePassword releaseStorePassword
+                keyAlias releaseKeyAlias
+                keyPassword releaseKeyPassword
+            }
+        }
     }
     buildTypes {
         debug {
             signingConfig signingConfigs.debug
         }
         release {
-            // Caution! In production, you need to generate your own keystore file.
-            // see https://reactnative.dev/docs/signed-apk-android.
-            signingConfig signingConfigs.debug
+            signingConfig releaseSigningConfigured ? signingConfigs.release : signingConfigs.debug
             minifyEnabled enableProguardInReleaseBuilds
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
         }

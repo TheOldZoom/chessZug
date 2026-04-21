@@ -51,7 +51,7 @@ coverage/
 
 # Yarn (Berry)
 .yarn/*
-!.yarn/patches
+!.yarn/pahow tches
 !.yarn/plugins
 !.yarn/releases
 !.yarn/sdks
